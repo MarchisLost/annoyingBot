@@ -11,13 +11,19 @@ client = discord.Client()
 
 @client.event
 async def on_ready():
-    for guild in client.guilds:
-        if guild.name == GUILD:
-            break
+    print(f'{client.user} is connected!')
 
-    print(
-        f'{client.user} is connected to the following guild:\n'
-        f'{guild.name}(id: {guild.id})'
-    )
+#Gets fat jonny id
+#gordo = client.get_user(524276962106146838)
+#print('gordo:', gordo)
+
+@client.event   
+async def on_message(message):
+    gordo = client.get_user(141180424964669440)
+    if message.author == gordo:
+        await message.channel.purge(limit=1)
+
+    if message.content.startswith('$hello'):
+        await message.channel.send('Hello!')
 
 client.run(TOKEN)
