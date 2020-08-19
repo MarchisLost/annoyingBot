@@ -9,8 +9,6 @@ GUILD = os.getenv('DISCORD_GUILD')
 
 client = discord.Client()
 
-#To be removed later
-gordo = client.get_user(os.getenv('DISCORD_USER'))
 
 @client.event
 async def on_ready():
@@ -24,6 +22,8 @@ async def on_ready():
 
 @client.event   
 async def on_message(message):
+    gordo = client.get_user(int(os.getenv('DISCORD_USER')))
+    print(gordo)
     if message.author == gordo:
         await message.channel.purge(limit=1)
 
