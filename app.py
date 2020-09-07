@@ -1,5 +1,6 @@
 import os
 import discord
+from time import sleep
 from dotenv import load_dotenv
 from datetime import datetime
 
@@ -13,7 +14,7 @@ client = discord.Client()
 """ 
 - Eliminar comentarios do gordo - DONE!
 - Tirar lhe sempre a professor chaos
-- Tirar lhe das salas
+- Tirar lhe das salas - DONE!
 - Chatear o mata
 - Criar permissoes nas salas para ele nem sequer conseguir entrar( not sure if this one works)
 - Convinha que ele conseguisse reproduzir musicas do spotify e youtube para nao parecer que é totalmente inutil, provavelmente já há codigo disso por aí, não deve ser muito dificil - TRUE
@@ -38,16 +39,10 @@ async def on_message(message):
         print(message.author)
         await message.channel.purge(limit=1)
 
-    #TODO this can be deleted imo u choose tho
-    if message.content.startswith('$hello'):
-        await message.channel.send('Hello!')
-
 #Disconnecter    
 @client.event 
 async def on_voice_state_update(member, before, after):
     now = datetime.now()
-    timestamp = datetime.timestamp(now) #! este time e pra nao ser instantaneo tambem?
-    
     #Stuff to remove later
     sheep = client.get_user(int(os.getenv('DISCORD_SHEEP')))
     march = client.get_user(int(os.getenv('DISCORD_MARCH')))
@@ -68,20 +63,14 @@ async def on_voice_state_update(member, before, after):
 #Role remover
 @client.event 
 async def on_member_update(before, after):
-    now = datetime.now()
-    timestamp = datetime.timestamp(now) #!!SHEEP Isto nao esta a ser usado, ainda vai ser usado pra nao se eliminar logo, right?
-    
     #Stuff to remove later
     sheep = client.get_user(int(os.getenv('DISCORD_SHEEP')))
     march = client.get_user(int(os.getenv('DISCORD_MARCH')))
     gordo = client.get_user(int(os.getenv('DISCORD_USER')))
     
-    #Print roles in log
-    #print(now, "-", before.roles)
-    #print(now, "-", after.top_role)
-    
     #This is to check if someone on the hitlist changed roles
     #TODO "bitch" must be replaced with "Professor Chaos" on the other server
+    sleep(5)
     if after == gordo or after == sheep or after == march and str(after.top_role) == "bitch":
         list_roles = after.roles.copy()
         
@@ -93,5 +82,5 @@ async def on_member_update(before, after):
                 del list_roles[index_role]
                 await after.edit(roles=list_roles)
                 print(after.roles)
-
+                
 client.run(TOKEN)
