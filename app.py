@@ -31,6 +31,7 @@ client = discord.Client()
 - Criar permissoes nas salas para ele nem sequer conseguir entrar( not sure if this one works)
 - Convinha que ele conseguisse reproduzir musicas do spotify e youtube para nao parecer que é totalmente inutil, provavelmente já há codigo disso por aí, não deve ser muito dificil - TRUE
 - Criar comandos do tipo "annoy [user_id]" para podermos fazer as cenas on the fly
+- Comandos para dar tag a pessoal de vários jogos, like !pummel ou !amongUs etc
 """
 
 @client.event   
@@ -63,6 +64,7 @@ async def on_voice_state_update(member, before, after):
     
     #Disconnecting on specific user joining voice channels
     if member == gordo or member == march:
+        print(member)
         await member.edit(voice_channel=None)
     
 #Role remover
@@ -228,9 +230,8 @@ class Song:
                  .add_field(name='Requested by', value=self.requester.mention)
                  .add_field(name='Uploader', value='[{0.source.uploader}]({0.source.uploader_url})'.format(self))
                  .add_field(name='URL', value='[Click]({0.source.url})'.format(self))
-                 .add_field(name='MATA IS A BITCH', value='And March is my Daddy'.format(self))
+                 #.add_field(name='MATA IS A BITCH', value='And March is my Daddy'.format(self))
                  .set_thumbnail(url=self.source.thumbnail))
-
         return embed
 
 
