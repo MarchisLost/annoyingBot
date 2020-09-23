@@ -15,7 +15,7 @@ import youtube_dl
 from async_timeout import timeout
 
 # Silence useless bug reports messages
-youtube_dl.utils.bug_reports_message = lambda: ''
+#youtube_dl.utils.bug_reports_message = lambda: ''
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -70,15 +70,18 @@ async def on_message(message):
     elif message.content.startswith("!help"):
         print('help by: ', message.author)
         await message.channel.send(march.mention + sheep.mention + '\nEsta aqui um nabo a pedir ajuda...\nPergunta a um destes dois se eles nao responderem!')
+    elif message.content.startswith("!bifes"): #kicks bifes as mata requested
+        print('bifes kicked by: ', message.author)
+        for member in message.guild.members:
+            if member.id == int("307621482186670082"): #bifes id
+                bifes = member
+        await bifes.kick(reason='You were being annoying dude, pls take it easy, thank you!')
 
 
 #Disconnecter    
 @client.event 
 async def on_voice_state_update(member, before, after):
     now = datetime.now()
-    #Stuff to remove later
-    sheep = client.get_user(int(os.getenv('DISCORD_SHEEP')))
-    march = client.get_user(int(os.getenv('DISCORD_MARCH')))
     gordo = client.get_user(int(os.getenv('DISCORD_GORDO')))
     
     #Simple channel movements log 
@@ -90,40 +93,30 @@ async def on_voice_state_update(member, before, after):
         print(now, "-", member, "left", before.channel, "and joined", after.channel)
     
     #Disconnecting on specific user joining voice channels
-    if member == gordo or member == march:
-        print('member disconnected: ',member)
+    if member == gordo:
+        print('member disconnected: ', member)
         await member.edit(voice_channel=None)
     
-#Role remover
+#Role remover - needs administrator role
 @client.event 
 async def on_member_update(before, after):
     #Stuff to remove later
-    sheep = client.get_user(int(os.getenv('DISCORD_SHEEP')))
-    march = client.get_user(int(os.getenv('DISCORD_MARCH')))
     gordo = client.get_user(int(os.getenv('DISCORD_GORDO')))
+    march = client.get_user(int(os.getenv('DISCORD_MARCH')))
     
     #This is to check if someone on the hitlist changed roles
     #TODO "bitch" must be replaced with "Professor Chaos" on the other server
     sleep(5)
-    if after == gordo or after == sheep or after == march and str(after.top_role) == "bitch":
+    if after == gordo or after == march and str(after.top_role) == "Professor Chaos":
         list_roles = after.roles.copy()
         
         #This is to check if professor chaos aka bitch is one of the roles and if it is, deletes it from the user
         for index, x in enumerate(list_roles, start=0):
             #Getting index of "bitch"
-            if str(x) == "bitch":
+            if str(x) == "Professor Chaos":
                 index_role = index
                 del list_roles[index_role]
                 await after.edit(roles=list_roles)
                 print(after.roles)
                 
-
-#Commands to invite people for games
-""" bot = commands.Bot(command_prefix='!')
-
-@bot.command(pass_context=True)
-async def sendMessage(ctx):
-     """
-
-
 client.run(TOKEN)
