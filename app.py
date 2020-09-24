@@ -24,6 +24,9 @@ mata = int(os.getenv('DISCORD_MATA'))
 bacon = int(os.getenv('DISCORD_BACON'))
 tiago = int(os.getenv('DISCORD_TIAGO'))
 fontes = int(os.getenv('DISCORD_FONTES'))
+tomas = int(os.getenv('DISCORD_TOMAS'))
+vera = int(os.getenv('DISCORD_VERA'))
+tiagoULP = int(os.getenv('DISCORD_TIAGO_ULP'))
 
 #Created the bot with a prefix
 bot = commands.Bot(command_prefix='!', description="Discord bot created by March & Sheep")
@@ -69,7 +72,7 @@ async def r6(ctx):
 async def amongus(ctx):
     print('among us by: ', ctx.author)
     await ctx.channel.purge(limit=1)
-    await ctx.channel.send('Sessão de Among Us?\n' + bot.get_user(march).mention + ' ' + bot.get_user(sheep).mention + ' ' + bot.get_user(bacon).mention + ' ' + bot.get_user(mata).mention + ' ' + bot.get_user(fontes).mention)
+    await ctx.channel.send('Sessão de Among Us?\n' + bot.get_user(march).mention + ' ' + bot.get_user(sheep).mention + ' ' + bot.get_user(bacon).mention + ' ' + bot.get_user(mata).mention + ' ' + bot.get_user(fontes).mention + ' ' + bot.get_user(tomas).mention + ' ' + bot.get_user(vera).mention + ' ' + bot.get_user(tiagoULP).mention)
 
 #Clash - Lol        
 @bot.command()
