@@ -22,24 +22,27 @@ march = int(os.getenv('DISCORD_MARCH'))
 gordo = int(os.getenv('DISCORD_GORDO'))
 mata = int(os.getenv('DISCORD_MATA'))
 bacon = int(os.getenv('DISCORD_BACON'))
-tiago = int(os.getenv('DISCORD_TIAGO')) #aka sheeps best friend in the whole world kappa, nao apagues, e pro comando "clash" de lol
+tiago = int(os.getenv('DISCORD_TIAGO'))
 fontes = int(os.getenv('DISCORD_FONTES'))
-    #print(sheep, march)
-bot = commands.Bot(command_prefix='!')
+
+#Created the bot with a prefix
+bot = commands.Bot(command_prefix='!', description="Discord bot created by March & Sheep")
+bot.remove_command('help') #Removes the default help command so we can create a new one
 
 #TODO Requisitos para se fazer!
 """ 
 - Eliminar comentarios do gordo - DONE!
 - Tirar lhe sempre a professor chaos - DONE!
 - Tirar lhe das salas - DONE!
+- Comandos para dar tag a pessoal de vários jogos, like !pummel ou !amongUs etc - DONE!
+- Meter estado do bot para !help e o help dizer pra perguntar ao sheep ou ao march - DONE!
+- Comando pra o mata kickar o bifes - DONE!
 - Chatear o mata
 - Criar permissoes nas salas para ele nem sequer conseguir entrar( not sure if this one works)
-- Convinha que ele conseguisse reproduzir musicas do spotify e youtube para nao parecer que é totalmente inutil - IN PROGRESS, STILL VERY SCUFFED
+- Convinha que ele conseguisse reproduzir musicas do spotify e youtube para nao parecer que é totalmente inutil - IN PROGRESS, STILL VERY SCUFFED - lul
 - Criar comandos do tipo "annoy [user_id]" para podermos fazer as cenas on the fly
-- Comandos para dar tag a pessoal de vários jogos, like !pummel ou !amongUs etc - DONE!
-- meter estado do bot para !help e o help dizer pra perguntar ao sheep ou ao march
 - Criar audit log num file que elimina apos +/- 30 dias
-- Comando pra o mata kickar o bifes
+- Comando pra kikar by name
 """
 
 @bot.command()
@@ -47,30 +50,36 @@ async def test(ctx):
     await ctx.send("123")
 
 #Commands to invite people for games -------------------------------------
+#Pummel Party
 @bot.command()
 async def pummel(ctx):
     print('pummel by: ', ctx.author)
     await ctx.channel.purge(limit=1)
     await ctx.channel.send('Sessão de pummel hoje?\n' + bot.get_user(march).mention + ' ' + bot.get_user(sheep).mention + ' ' + bot.get_user(bacon).mention + ' ' + bot.get_user(mata).mention)
 
+#Rainbow Six Siege
 @bot.command()
 async def r6(ctx):
     print('r6 by: ', ctx.author)
     await ctx.channel.purge(limit=1)
     await ctx.channel.send('Alguém quer vir rainbow?\n Sheep Instala o rainbow!\n' + bot.get_user(march).mention + ' ' + bot.get_user(sheep).mention + ' ' + bot.get_user(bacon).mention + ' ' + bot.get_user(mata).mention + ' ' + bot.get_user(fontes).mention)
 
+#Among Us
 @bot.command()
 async def amongus(ctx):
     print('among us by: ', ctx.author)
     await ctx.channel.purge(limit=1)
     await ctx.channel.send('Sessão de Among Us?\n' + bot.get_user(march).mention + ' ' + bot.get_user(sheep).mention + ' ' + bot.get_user(bacon).mention + ' ' + bot.get_user(mata).mention + ' ' + bot.get_user(fontes).mention)
-        
+
+#Clash - Lol        
 @bot.command()
 async def clash(ctx):
     print('clash by: ', ctx.author)
     await ctx.channel.purge(limit=1)
     await ctx.channel.send('Clash este fds? Alguém não pode?\n' + bot.get_user(march).mention + ' ' + bot.get_user(tiago).mention + ' ' + bot.get_user(bacon).mention + ' ' + bot.get_user(mata).mention + ' ' + bot.get_user(fontes).mention)
+#Ended  --  Commands to invite people for games -------------------------------------
 
+#Comand to kick bifes - change to be able to kick @someone
 @bot.command()
 async def bifes(ctx):
     print('bifes kicked by: ', ctx.author)
@@ -80,12 +89,14 @@ async def bifes(ctx):
             bifes = member
     await bifes.kick(reason='You were being annoying dude, pls take it easy, thank you!')
 
-""" Existe uma cena própria para o comando help, temos de usar isso em vez disto
-elif message.content.startswith("!help"):
-    print('help by: ', message.author)
-    await message.channel.send(bot.get_user(march).mention + bot.get_user(sheep).mention + '\nEsta aqui um nabo a pedir ajuda...\nPergunta a um destes dois se eles nao responderem!')
-"""
+#New help command
+@bot.command()
+async def help(ctx):
+    print('help by: ', ctx.author)
+    await ctx.channel.send(bot.get_user(march).mention + ' ' + bot.get_user(sheep).mention + '\nEsta aqui um nabo a pedir ajuda...\nPergunta a um destes dois se eles nao responderem!\nPara a musica é so !play song name/spotify link')
 
+
+#Deletes Gordo's messages
 @bot.event   
 async def on_message(message):
     #Message Deleter-------
@@ -94,7 +105,7 @@ async def on_message(message):
         await message.channel.purge(limit=1)
     await bot.process_commands(message)
 
-#Disconnecter    
+#Disconnectes Gordo from voice channels
 @bot.event 
 async def on_voice_state_update(member, before, after):
     now = datetime.now()   
@@ -110,8 +121,8 @@ async def on_voice_state_update(member, before, after):
     if member == bot.get_user(gordo):
         print('member disconnected: ', member)
         await member.edit(voice_channel=None)
-    
-#Role remover - needs administrator role
+  
+#Removes Gordo's Professor chaos role- needs administrator role
 @bot.event 
 async def on_member_update(before, after):
     #This is to check if someone on the hitlist changed roles
@@ -130,8 +141,13 @@ async def on_member_update(before, after):
                 
 @bot.event
 async def on_ready():
+    #Changes bot status
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='You !help if you dumb enough\nCreated by March & Sheep' ))
     print(f'{bot.user} is connected!')
-    print('Logged in as:\n{0.user.name}\n{0.user.id}'.format(bot))
+    print('Logged in as: {0.user.name}'.format(bot))
+    print('Connected on the following servers:')
     #Gets servers that the bot is connected to
-    print(bot.guilds)
+    for i in range(len(bot.guilds)):
+        print('  ', bot.guilds[i].name)
+    
 bot.run(TOKEN)
