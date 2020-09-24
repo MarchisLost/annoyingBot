@@ -28,6 +28,11 @@ tomas = int(os.getenv('DISCORD_TOMAS'))
 vera = int(os.getenv('DISCORD_VERA'))
 tiagoULP = int(os.getenv('DISCORD_TIAGO_ULP'))
 
+#Gets the image path
+img_path = 'mata.jpeg'
+pfp = open(img_path, 'rb')
+img = pfp.read()
+
 #Created the bot with a prefix
 bot = commands.Bot(command_prefix='!', description="Discord bot created by March & Sheep")
 bot.remove_command('help') #Removes the default help command so we can create a new one
@@ -146,6 +151,7 @@ async def on_member_update(before, after):
 async def on_ready():
     #Changes bot status
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='You !help if you dumb enough\nCreated by March & Sheep' ))
+    await bot.user.edit(avatar=img)
     print(f'{bot.user} is connected!')
     print('Logged in as: {0.user.name}'.format(bot))
     print('Connected on the following servers:')
