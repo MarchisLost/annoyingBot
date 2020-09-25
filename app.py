@@ -37,22 +37,6 @@ img = pfp.read()
 bot = commands.Bot(command_prefix='!', description="Discord bot created by March & Sheep")
 bot.remove_command('help') #Removes the default help command so we can create a new one
 
-#TODO Requisitos para se fazer!
-""" 
-- Eliminar comentarios do gordo - DONE!
-- Tirar lhe sempre a professor chaos - DONE!
-- Tirar lhe das salas - DONE!
-- Comandos para dar tag a pessoal de vários jogos, like !pummel ou !amongUs etc - DONE!
-- Meter estado do bot para !help e o help dizer pra perguntar ao sheep ou ao march - DONE!
-- Comando pra o mata kickar o bifes - DONE!
-- Chatear o mata
-- Criar permissoes nas salas para ele nem sequer conseguir entrar( not sure if this one works)
-- Convinha que ele conseguisse reproduzir musicas do spotify e youtube para nao parecer que é totalmente inutil - IN PROGRESS, STILL VERY SCUFFED - lul
-- Criar comandos do tipo "annoy [user_id]" para podermos fazer as cenas on the fly
-- Criar audit log num file que elimina apos +/- 30 dias
-- Comando pra kikar by name
-"""
-
 @bot.command()
 async def test(ctx):
     await ctx.send("123")
@@ -146,7 +130,13 @@ async def on_member_update(before, after):
                 del list_roles[index_role]
                 await after.edit(roles=list_roles)
                 print(after.roles)
-                
+
+# MUSIC BOT
+
+
+
+
+#      
 @bot.event
 async def on_ready():
     #Changes bot status
