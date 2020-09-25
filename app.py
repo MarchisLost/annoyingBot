@@ -603,7 +603,7 @@ class Music(commands.Cog):
             await ctx.invoke(self._join)
         
         txt = str(search)
-        if (txt.startswith('spotify')):
+        if (txt.__contains__('spotify')):
             songList = spotify.getSongs(pl_id)
             await ctx.send('Enqueued ' + str(len(songList)) + ' songs!')
             for x in songList:
