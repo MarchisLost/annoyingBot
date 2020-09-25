@@ -10,12 +10,11 @@ SPOTIPY_CLIENT_ID = os.getenv('SPOTIPY_CLIENT_ID')
 SPOTIPY_CLIENT_SECRET = os.getenv('SPOTIPY_CLIENT_SECRET')
 sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
 
-songList = []
-
 # playlist adionada manulamente para testar o código
 #pl_id = 'spotify:playlist:1Qhy7QA5Gfgc1Ugwpk5iXl'
 
 def getSongs(id):
+    songList = []
     playlist = sp.playlist(id)
     print(playlist['name'], 'made by:', playlist['owner']['display_name'])
     tracks = playlist['tracks']

@@ -604,7 +604,11 @@ class Music(commands.Cog):
         
         txt = str(search)
         if (txt.__contains__('spotify')):
-            songList = spotify.getSongs(pl_id)
+            try:
+                songList = spotify.getSongs(txt)
+            except:
+                songList = spotify.getSongs(pl_id)
+            
             await ctx.send('Enqueued ' + str(len(songList)) + ' songs!')
             for x in songList:
                 search = x     
