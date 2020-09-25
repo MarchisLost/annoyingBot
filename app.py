@@ -14,6 +14,8 @@ import random
 from async_timeout import timeout
 import youtube_dl
 
+import spotify
+
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD')
@@ -34,6 +36,8 @@ img_path = 'tsm.jpeg'
 pfp = open(img_path, 'rb')
 img = pfp.read()
 
+pl_id = 'spotify:playlist:1Qhy7QA5Gfgc1Ugwpk5iXl'
+
 #Created the bot with a prefix
 bot = commands.Bot(command_prefix='!', description="Discord bot created by March & Sheep")
 bot.remove_command('help') #Removes the default help command so we can create a new one
@@ -41,6 +45,9 @@ bot.remove_command('help') #Removes the default help command so we can create a 
 @bot.command()
 async def test(ctx):
     await ctx.send("123")
+    songList = spotify.getSongs(pl_id)
+    for x in songList:
+        print(x) 
 
 #Commands to invite people for games -------------------------------------
 #Pummel Party
@@ -141,8 +148,10 @@ youtube_dl.utils.bug_reports_message = lambda: ''
 class VoiceError(Exception):
     pass
 
+
 class YTDLError(Exception):
     pass
+
 
 class YTDLSource(discord.PCMVolumeTransformer):
     YTDL_OPTIONS = {
@@ -589,20 +598,34 @@ class Music(commands.Cog):
         This command automatically searches from various sites if no URL is provided.
         A list of these sites can be found here: https://rg3.github.io/youtube-dl/supportedsites.html
         """
-
+        
         if not ctx.voice_state.voice:
             await ctx.invoke(self._join)
+        
+        txt = str(search)
+        if (txt.startswith('spotify')):
+            songList = spotify.getSongs(pl_id)
+            await ctx.send('Enqueued ' + str(len(songList)) + ' songs!')
+            for x in songList:
+                search = x     
+                try:
+                    source = await YTDLSource.create_source(ctx, search, loop=self.client.loop)
+                except YTDLError as e:
+                    await ctx.send('An error occurred while processing this request: {}'.format(str(e)))
+                else:
+                    song = Song(source)
+                    await ctx.voice_state.songs.put(song)
+        else:
 
-        async with ctx.typing():
-            try:
-                source = await YTDLSource.create_source(ctx, search, loop=self.client.loop)
-            except YTDLError as e:
-                await ctx.send('An error occurred while processing this request: {}'.format(str(e)))
-            else:
-                song = Song(source)
-
-                await ctx.voice_state.songs.put(song)
-                await ctx.send('Enqueued {}'.format(str(source)))
+            async with ctx.typing():
+                try:
+                    source = await YTDLSource.create_source(ctx, search, loop=self.client.loop)
+                except YTDLError as e:
+                    await ctx.send('An error occurred while processing this request: {}'.format(str(e)))
+                else:
+                    song = Song(source)
+                    await ctx.voice_state.songs.put(song)
+                    await ctx.send('Enqueued {}'.format(str(source)))
 
     @_join.before_invoke
     @_play.before_invoke
@@ -614,14 +637,16 @@ class Music(commands.Cog):
             if ctx.voice_client.channel != ctx.author.voice.channel:
                 raise commands.CommandError('Bot is already in a voice channel.')
 
+
+
 bot.add_cog(Music(bot))
 
 #      
 @bot.event
 async def on_ready():
     #Changes bot status
-    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='You !help if you dumb enough\nCreated by March & Sheep' ))
-    await bot.user.edit(avatar=img)
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='You !help if you dumb enough\nCreated by March & Sheep'))
+    #await bot.user.edit(avatar=img)
     print(f'{bot.user} is connected!')
     print('Logged in as: {0.user.name}'.format(bot))
     print('Connected on the following servers:')
