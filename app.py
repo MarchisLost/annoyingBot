@@ -30,7 +30,7 @@ vera = int(os.getenv('DISCORD_VERA'))
 tiagoULP = int(os.getenv('DISCORD_TIAGO_ULP'))
 
 #Gets the image path
-img_path = 'mata.jpeg'
+img_path = 'tsm.jpeg'
 pfp = open(img_path, 'rb')
 img = pfp.read()
 
@@ -141,10 +141,8 @@ youtube_dl.utils.bug_reports_message = lambda: ''
 class VoiceError(Exception):
     pass
 
-
 class YTDLError(Exception):
     pass
-
 
 class YTDLSource(discord.PCMVolumeTransformer):
     YTDL_OPTIONS = {
@@ -615,8 +613,6 @@ class Music(commands.Cog):
         if ctx.voice_client:
             if ctx.voice_client.channel != ctx.author.voice.channel:
                 raise commands.CommandError('Bot is already in a voice channel.')
-
-
 
 bot.add_cog(Music(bot))
 
