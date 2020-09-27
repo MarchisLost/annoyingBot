@@ -107,7 +107,7 @@ async def on_message(message):
         print('message author: ', message.author)
         await message.channel.purge(limit=1)
     await bot.process_commands(message)
-    if message.author == bot.get_user(sheep):
+    if message.author == bot.get_user(mata):
         num = random.random() * 100
         print(num)
         if num >= 50:
