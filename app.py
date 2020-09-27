@@ -109,7 +109,7 @@ async def on_message(message):
     await bot.process_commands(message)
     if message.author == bot.get_user(mata):
         num = random.random() * 100
-        print(num)
+        #print(num)
         if num >= 50:
             await message.add_reaction('🖕')
         elif num < 10:
