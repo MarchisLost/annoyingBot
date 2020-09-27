@@ -38,6 +38,9 @@ img = pfp.read()
 
 pl_id = 'spotify:playlist:1Qhy7QA5Gfgc1Ugwpk5iXl'
 
+songList = []
+playlistName = ""
+
 #Created the bot with a prefix
 bot = commands.Bot(command_prefix='!', description="Discord bot created by March & Sheep")
 bot.remove_command('help') #Removes the default help command so we can create a new one
@@ -104,6 +107,16 @@ async def on_message(message):
         print('message author: ', message.author)
         await message.channel.purge(limit=1)
     await bot.process_commands(message)
+    if message.author == bot.get_user(sheep):
+        num = random.random() * 100
+        print(num)
+        if num >= 50:
+            await message.add_reaction('🖕')
+        elif num < 10:
+            await message.channel.send(message.author.mention + " " + random.choice(mensagem))
+        
+        
+mensagem = ["You're still a bitch tho ", "No you", "Já estou farto de te ouvir bitch", "Vai estudar!", "A tua mãe chamou-te", "Os teus Celtics são uma porcaria!", "Ouvi dizer que o Sheep te insultou", "Ouvi dizer que o March te insultou", "U gay","My middle finger get's a boner when i think of you ;)", "Roses are red, violets are blue, I've got five fingers and the middle one is for you ;)", "Life is short and so is your penis.", "You are cordially invited to Go Fuck Yourself :D"]
 
 #Disconnectes Gordo from voice channels
 @bot.event 
@@ -536,21 +549,24 @@ class Music(commands.Cog):
 
         You can optionally specify the page to show. Each page contains 10 elements.
         """
-
+        global songList
+        global playlistName
+        
         if len(ctx.voice_state.songs) == 0:
             return await ctx.send('Empty queue.')
 
+        await ctx.message.add_reaction('✅')
         items_per_page = 10
-        pages = math.ceil(len(ctx.voice_state.songs) / items_per_page)
+        pages = math.ceil(len(songList) / items_per_page)
 
         start = (page - 1) * items_per_page
         end = start + items_per_page
 
         queue = ''
-        for i, song in enumerate(ctx.voice_state.songs[start:end], start=start):
-            queue += '`{0}.` [**{1.source.title}**]({1.source.url})\n'.format(i + 1, song)
-
-        embed = (discord.Embed(description='**{} tracks:**\n\n{}'.format(len(ctx.voice_state.songs), queue))
+        for i, song in enumerate(songList[start:end], start=start):
+            queue += "%s - %s \n" % (i+1, song)
+        print(playlistName)
+        embed = (discord.Embed(description='**{}\n{} tracks:**\n\n{}'.format(playlistName, len(songList), queue))
                  .set_footer(text='Viewing page {}/{}'.format(page, pages)))
         await ctx.send(embed=embed)
 
@@ -561,8 +577,19 @@ class Music(commands.Cog):
         if len(ctx.voice_state.songs) == 0:
             return await ctx.send('Empty queue.')
 
-        ctx.voice_state.songs.shuffle()
+        random.shuffle(songList)
+        ctx.voice_state.songs.clear()
         await ctx.message.add_reaction('✅')
+        print(songList)
+        for x in songList:
+                search = x     
+                try:
+                    source = await YTDLSource.create_source(ctx, search, loop=self.client.loop)
+                except YTDLError as e:
+                    await ctx.send('An error occurred while processing this request: {}'.format(str(e)))
+                else:
+                    song = Song(source)
+                    await ctx.voice_state.songs.put(song)
 
     @commands.command(name='remove')
     async def _remove(self, ctx: commands.Context, index: int):
@@ -598,18 +625,22 @@ class Music(commands.Cog):
         This command automatically searches from various sites if no URL is provided.
         A list of these sites can be found here: https://rg3.github.io/youtube-dl/supportedsites.html
         """
+        global songList
+        global playlistName
         
         if not ctx.voice_state.voice:
             await ctx.invoke(self._join)
         
+        await ctx.message.add_reaction('✅')
         txt = str(search)
         if (txt.__contains__('spotify')):
             try:
-                songList = spotify.getSongs(txt)
+                songList, playlistName = spotify.getSongs(txt)
+                await ctx.send('Enqueued ' + str(len(songList)) + ' songs!')
             except:
                 songList = spotify.getSongs(pl_id)
+                await ctx.send('I did not find the music/playlist you requested, in the mean time listen to this one made by my daddy!')
             
-            await ctx.send('Enqueued ' + str(len(songList)) + ' songs!')
             for x in songList:
                 search = x     
                 try:

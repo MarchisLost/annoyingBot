@@ -6,8 +6,9 @@
 - Comando pra o mata kickar o bifes - DONE!
 - Chatear o mata
 - Criar permissoes nas salas para ele nem sequer conseguir entrar( not sure if this one works)
-- Convinha que ele conseguisse reproduzir musicas do spotify e youtube para nao parecer que é totalmente inutil - IN PROGRESS, STILL VERY SCUFFED - lul
+- Convinha que ele conseguisse reproduzir musicas do spotify e youtube para nao parecer que é totalmente inutil - DONE!
 - Criar comandos do tipo "annoy [user_id]" para podermos fazer as cenas on the fly
 - Criar audit log num file que elimina apos +/- 30 dias
 - Comando pra kikar by name
 - Custom game announcement that tags everyone in a certain game role that keeps track and shows how many people are gonna play based on discord reactions or a button in that announcement.
+- Adicionar uma custom playlist ao bot da musica para não demorar tanto a dar queue às musicas
