@@ -640,12 +640,15 @@ class Music(commands.Cog):
         
         await ctx.message.add_reaction('✅')
         txt = str(search)
+        songList1 = []
         if (txt.__contains__('spotify')):
             try:
-                songList, playlistName = spotify.getSongs(txt)
+                songList1, playlistName = spotify.getSongs(txt)
+                songList.extend(songList1)
                 await ctx.send('Enqueued ' + str(len(songList)) + ' songs!')
             except:
-                songList = spotify.getSongs(pl_id)
+                songList1, playlistName = spotify.getSongs(pl_id)
+                songList.extend(songList1)
                 await ctx.send('I did not find the music/playlist you requested, in the mean time listen to this one made by my daddy!')
             
             for x in songList:

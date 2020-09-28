@@ -40,7 +40,7 @@ def getSongs(id):
         for i, item in enumerate(tracks['items']):
             track = item['track']
             #print(track['artists'][0]['name'], track['name'])
-            song = track['artists'][0]['name'] + " " + track['name']
+            song = track['artists'][0]['name'] + " " + track['name'] + " audio lyrics"
             songList.append(song)
         while tracks['next']:
             tracks = sp.next(tracks)
