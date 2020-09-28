@@ -25,9 +25,8 @@ def getSongs(id):
         #pprint(tracks['items'])
         for i, item in enumerate(tracks['items']):
             track = item['name']
-            #print(track)
-            song = item['artists'][0]['name'] + " " + track + " audio"
-            print(song)
+            song = item['artists'][0]['name'] + " " + track + " audio lyrics"
+            #print(song)
             songList.append(song)
         playlistName = playlist['name'] + " by " + playlist['artists'][0]['name']
         return songList, playlistName
@@ -48,7 +47,7 @@ def getSongs(id):
             for i, item in enumerate(tracks['items']):
                 track = item['track']
                 #print(track['artists'][0]['name'], track['name'])
-                song = track['artists'][0]['name'] + " " + track['name'] + " audio"
+                song = track['artists'][0]['name'] + " " + track['name'] + " audio lyrics"
                 songList.append(song)
         return songList, playlistName
     
