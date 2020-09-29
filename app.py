@@ -631,6 +631,7 @@ class Music(commands.Cog):
 
         This command automatically searches from various sites if no URL is provided.
         A list of these sites can be found here: https://rg3.github.io/youtube-dl/supportedsites.html
+        
         """
         global songList
         global playlistName
