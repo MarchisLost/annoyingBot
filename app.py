@@ -586,7 +586,7 @@ class Music(commands.Cog):
 
         random.shuffle(songList)
         ctx.voice_state.songs.clear()
-        await ctx.message.add_reaction('✅')
+        await ctx.message.add_reaction('🔀')
         print(songList)
         for x in songList:
                 search = x     
