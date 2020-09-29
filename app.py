@@ -18,7 +18,6 @@ import spotify
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-GUILD = os.getenv('DISCORD_GUILD')
 # Gets user id's
 sheep = int(os.getenv('DISCORD_SHEEP'))
 march = int(os.getenv('DISCORD_MARCH'))
