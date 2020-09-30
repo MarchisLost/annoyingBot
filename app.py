@@ -117,6 +117,13 @@ async def on_message(message):
         
 mensagem = ["You're still a bitch tho ", "No you", "Já estou farto de te ouvir bitch", "Vai estudar!", "A tua mãe chamou-te", "Os teus Celtics são uma porcaria!", "Ouvi dizer que o Sheep te insultou", "Ouvi dizer que o March te insultou", "U gay","My middle finger get's a boner when i think of you ;)", "Roses are red, violets are blue, I've got five fingers and the middle one is for you ;)", "Life is short and so is your penis.", "You are cordially invited to Go Fuck Yourself :D"]
 
+@bot.event   
+async def on_raw_reaction_add(payload):
+    if payload.user_id != bot.get_user(gordo):
+        channel = bot.get_channel(payload.channel_id)
+        msg = await channel.fetch_message(payload.message_id)
+        await msg.add_reaction(payload.emoji)
+        
 #Disconnectes Gordo from voice channels
 @bot.event 
 async def on_voice_state_update(member, before, after):
