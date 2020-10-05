@@ -11,4 +11,6 @@
 - Criar audit log num file que elimina apos +/- 30 dias
 - Comando pra kikar by name
 - Custom game announcement that tags everyone in a certain game role that keeps track and shows how many people are gonna play based on discord reactions or a button in that announcement.
-- Adicionar uma custom playlist ao bot da musica para não demorar tanto a dar queue às musicas
+- Adicionar uma custom playlist ao bot da musica para não demorar tanto a dar queue às musicas - DONE
+- Remover a cena dos votes - DONE
+- Adicionar musicas que foram pedidas com o comando !play à queue

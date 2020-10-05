@@ -18,7 +18,6 @@ import spotify
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-GUILD = os.getenv('DISCORD_GUILD')
 # Gets user id's
 sheep = int(os.getenv('DISCORD_SHEEP'))
 march = int(os.getenv('DISCORD_MARCH'))
@@ -127,6 +126,13 @@ async def on_message(message):
         
 mensagem = ["You're still a bitch tho ", "No you", "Já estou farto de te ouvir bitch", "Vai estudar!", "A tua mãe chamou-te", "Os teus Celtics são uma porcaria!", "Ouvi dizer que o Sheep te insultou", "Ouvi dizer que o March te insultou", "U gay", "My middle finger get's a boner when i think of you ;)", "Roses are red, violets are blue, I've got five fingers and the middle one is for you ;)", "Life is short and so is your penis.", "You are cordially invited to Go Fuck Yourself :D"]
 
+@bot.event   
+async def on_raw_reaction_add(payload):
+    if payload.user_id != bot.get_user(gordo):
+        channel = bot.get_channel(payload.channel_id)
+        msg = await channel.fetch_message(payload.message_id)
+        await msg.add_reaction(payload.emoji)
+        
 #Disconnectes Gordo from voice channels
 @bot.event 
 async def on_voice_state_update(member, before, after):
@@ -385,7 +391,7 @@ class VoiceState:
     def play_next_song(self, error=None):
         if error:
             raise VoiceError(str(error))
-
+        songList.pop(0)
         self.next.set()
 
     def skip(self):
@@ -467,6 +473,7 @@ class Music(commands.Cog):
         if not ctx.voice_state.voice:
             return await ctx.send('Not connected to any voice channel.')
 
+        await ctx.message.add_reaction('👋')
         await ctx.voice_state.stop()
         del self.voice_states[ctx.guild.id]
 
@@ -527,6 +534,7 @@ class Music(commands.Cog):
         if not ctx.voice_state.is_playing:
             return await ctx.send('Not playing any music right now...')
 
+        """  COM VOTES
         voter = ctx.message.author
         if voter == ctx.voice_state.current.requester:
             await ctx.message.add_reaction('⏭')
@@ -541,10 +549,16 @@ class Music(commands.Cog):
                 ctx.voice_state.skip()
             else:
                 await ctx.send('Skip vote added, currently at **{}/3**'.format(total_votes))
-
+                
         else:
             await ctx.send('You have already voted to skip this song.')
+        """
 
+
+        # SEM VOTES
+        await ctx.message.add_reaction('⏭')
+        ctx.voice_state.skip()
+        
     @commands.command(name='queue')
     async def _queue(self, ctx: commands.Context, *, page: int = 1):
         """Shows the player's queue.
@@ -568,7 +582,7 @@ class Music(commands.Cog):
         for i, song in enumerate(songList[start:end], start=start):
             queue += "%s - %s \n" % (i+1, song)
         print(playlistName)
-        embed = (discord.Embed(description='**{}\n{} tracks:**\n\n{}'.format(playlistName, len(songList), queue))
+        embed = (discord.Embed(description='**{} tracks:**\n\n{}'.format(len(songList), queue))
                  .set_footer(text='Viewing page {}/{}'.format(page, pages)))
         await ctx.send(embed=embed)
 
@@ -581,7 +595,7 @@ class Music(commands.Cog):
 
         random.shuffle(songList)
         ctx.voice_state.songs.clear()
-        await ctx.message.add_reaction('✅')
+        await ctx.message.add_reaction('🔀')
         print(songList)
         for x in songList:
                 search = x     
@@ -626,6 +640,7 @@ class Music(commands.Cog):
 
         This command automatically searches from various sites if no URL is provided.
         A list of these sites can be found here: https://rg3.github.io/youtube-dl/supportedsites.html
+        
         """
         global songList
         global playlistName
@@ -635,12 +650,15 @@ class Music(commands.Cog):
         
         await ctx.message.add_reaction('✅')
         txt = str(search)
+        songList1 = []
         if (txt.__contains__('spotify')):
             try:
-                songList, playlistName = spotify.getSongs(txt)
+                songList1, playlistName = spotify.getSongs(txt)
+                songList.extend(songList1)
                 await ctx.send('Enqueued ' + str(len(songList)) + ' songs!')
             except:
-                songList = spotify.getSongs(pl_id)
+                songList1, playlistName = spotify.getSongs(pl_id)
+                songList.extend(songList1)
                 await ctx.send('I did not find the music/playlist you requested, in the mean time listen to this one made by my daddy!')
             
             for x in songList:
