@@ -58,7 +58,16 @@ async def test(ctx):
 async def pummel(ctx):
     print('pummel by: ', ctx.author)
     await ctx.channel.purge(limit=1)
-    await ctx.channel.send('Sessão de pummel hoje?\n' + bot.get_user(march).mention + ' ' + bot.get_user(sheep).mention + ' ' + bot.get_user(bacon).mention + ' ' + bot.get_user(mata).mention)
+    #Create embed
+    embedVar = discord.Embed(title="Pummel!!", description="Sessão de Pummel Party hoje?", color=0xe91e63)
+    embedVar.add_field(name='March', value=ctx.bot.get_user(march).mention)
+    embedVar.add_field(name="Sheep", value=ctx.bot.get_user(sheep).mention, inline=False)
+    embedVar.add_field(name="Bacon", value=ctx.bot.get_user(bacon).mention, inline=False)
+    embedVar.add_field(name="Mata Gay", value=ctx.bot.get_user(mata).mention)
+    mess = await ctx.channel.send(embed=embedVar)
+    await mess.add_reaction("👍")
+    await mess.add_reaction("👎")
+
 
 #Rainbow Six Siege
 @bot.command()
@@ -116,7 +125,7 @@ async def on_message(message):
             await message.channel.send(message.author.mention + " " + random.choice(mensagem))
         
         
-mensagem = ["You're still a bitch tho ", "No you", "Já estou farto de te ouvir bitch", "Vai estudar!", "A tua mãe chamou-te", "Os teus Celtics são uma porcaria!", "Ouvi dizer que o Sheep te insultou", "Ouvi dizer que o March te insultou", "U gay","My middle finger get's a boner when i think of you ;)", "Roses are red, violets are blue, I've got five fingers and the middle one is for you ;)", "Life is short and so is your penis.", "You are cordially invited to Go Fuck Yourself :D"]
+mensagem = ["You're still a bitch tho ", "No you", "Já estou farto de te ouvir bitch", "Vai estudar!", "A tua mãe chamou-te", "Os teus Celtics são uma porcaria!", "Ouvi dizer que o Sheep te insultou", "Ouvi dizer que o March te insultou", "U gay", "My middle finger get's a boner when i think of you ;)", "Roses are red, violets are blue, I've got five fingers and the middle one is for you ;)", "Life is short and so is your penis.", "You are cordially invited to Go Fuck Yourself :D"]
 
 #Disconnectes Gordo from voice channels
 @bot.event 
@@ -152,19 +161,16 @@ async def on_member_update(before, after):
                 await after.edit(roles=list_roles)
                 print(after.roles)
 
-# MUSIC BOT
 
+# MUSIC BOT
 # Silence useless bug reports messages
 youtube_dl.utils.bug_reports_message = lambda: ''
-
 
 class VoiceError(Exception):
     pass
 
-
 class YTDLError(Exception):
     pass
-
 
 class YTDLSource(discord.PCMVolumeTransformer):
     YTDL_OPTIONS = {
@@ -274,7 +280,6 @@ class YTDLSource(discord.PCMVolumeTransformer):
 
         return ', '.join(duration)
 
-
 class Song:
     __slots__ = ('source', 'requester')
 
@@ -293,7 +298,6 @@ class Song:
                  .set_footer(text="btw, mata's a bitch")
                  .set_thumbnail(url=self.source.thumbnail))
         return embed
-
 
 class SongQueue(asyncio.Queue):
     def __getitem__(self, item):
@@ -316,7 +320,6 @@ class SongQueue(asyncio.Queue):
 
     def remove(self, index: int):
         del self._queue[index]
-
 
 class VoiceState:
     def __init__(self, client: commands.Bot, ctx: commands.Context):
@@ -397,7 +400,6 @@ class VoiceState:
         if self.voice:
             await self.voice.disconnect()
             self.voice = None
-
 
 class Music(commands.Cog):
     def __init__(self, client: commands.Bot):
@@ -672,11 +674,8 @@ class Music(commands.Cog):
             if ctx.voice_client.channel != ctx.author.voice.channel:
                 raise commands.CommandError('Bot is already in a voice channel.')
 
-
-
 bot.add_cog(Music(bot))
-
-#      
+     
 @bot.event
 async def on_ready():
     #Changes bot status
