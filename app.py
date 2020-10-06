@@ -192,7 +192,7 @@ async def embedYes(payload):
     for x in fields:
         if "✅" in str(x['name']):
             confirmed += + 1
-    embed.set_footer(text='\nConfirmados {}/{}'.format(confirmed, max_players_pummel))
+    #embed.set_footer(text='\nConfirmados {}/{}'.format(confirmed, max_players_pummel))
     await msg.edit(embed=embed)
     print("check marked")
 
@@ -226,7 +226,7 @@ async def embedNo(payload):
     for x in fields:
         if "✅" in str(x['name']):
             confirmed += + 1
-    embed.set_footer(text='\nConfirmados {}/{}'.format(confirmed, max_players_pummel))
+   #embed.set_footer(text='\nConfirmados {}/{}'.format(confirmed, max_players_pummel))
     await msg.edit(embed=embed)
     print("cross marked")
 
