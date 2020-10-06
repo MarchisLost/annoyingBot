@@ -15,6 +15,9 @@ from async_timeout import timeout
 import youtube_dl
 
 import spotify
+from pprint import pprint
+
+import re
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -29,6 +32,7 @@ fontes = int(os.getenv('DISCORD_FONTES'))
 tomas = int(os.getenv('DISCORD_TOMAS'))
 vera = int(os.getenv('DISCORD_VERA'))
 tiagoULP = int(os.getenv('DISCORD_TIAGO_ULP'))
+pummel_id = int(os.getenv('DISCORD_PUMMEL'))
 
 #Gets the image path
 img_path = 'tsm.jpeg'
@@ -39,6 +43,10 @@ pl_id = 'spotify:playlist:1Qhy7QA5Gfgc1Ugwpk5iXl'
 
 songList = []
 playlistName = ""
+
+
+confirmed = 0
+max_players_pummel = 8
 
 #Created the bot with a prefix
 bot = commands.Bot(command_prefix='!', description="Discord bot created by March & Sheep")
@@ -51,23 +59,28 @@ async def test(ctx):
     for x in songList:
         print(x) 
 
+
+def EmbedPummel():
+    embedVar = discord.Embed(title="Pummel!!", description="Sessão de Pummel Party hoje?", color=0xe91e63)
+    
 #Commands to invite people for games -------------------------------------
 #Pummel Party
 @bot.command()
 async def pummel(ctx):
+    global max_players_pummel
+    confirmed = 0
     print('pummel by: ', ctx.author)
     await ctx.channel.purge(limit=1)
     #Create embed
     embedVar = discord.Embed(title="Pummel!!", description="Sessão de Pummel Party hoje?", color=0xe91e63)
-    embedVar.add_field(name='March', value=ctx.bot.get_user(march).mention)
-    embedVar.add_field(name="Sheep", value=ctx.bot.get_user(sheep).mention, inline=False)
-    embedVar.add_field(name="Bacon", value=ctx.bot.get_user(bacon).mention, inline=False)
-    embedVar.add_field(name="Mata Gay", value=ctx.bot.get_user(mata).mention)
+    members = ctx.guild.get_role(pummel_id).members
+    for x in members:
+        embedVar.add_field(name=x.name, value=x.mention, inline=False)
+    embedVar.set_footer(text='\nConfirmados {}/{}'.format(confirmed, max_players_pummel))
     mess = await ctx.channel.send(embed=embedVar)
-    await mess.add_reaction("👍")
-    await mess.add_reaction("👎")
-
-
+    await mess.add_reaction("✅")
+    await mess.add_reaction("❎")
+    
 #Rainbow Six Siege
 @bot.command()
 async def r6(ctx):
@@ -126,13 +139,160 @@ async def on_message(message):
         
 mensagem = ["You're still a bitch tho ", "No you", "Já estou farto de te ouvir bitch", "Vai estudar!", "A tua mãe chamou-te", "Os teus Celtics são uma porcaria!", "Ouvi dizer que o Sheep te insultou", "Ouvi dizer que o March te insultou", "U gay", "My middle finger get's a boner when i think of you ;)", "Roses are red, violets are blue, I've got five fingers and the middle one is for you ;)", "Life is short and so is your penis.", "You are cordially invited to Go Fuck Yourself :D"]
 
+
 @bot.event   
 async def on_raw_reaction_add(payload):
-    if payload.user_id != bot.get_user(gordo):
+    global max_players_pummel
+    if str(payload.emoji) == "✅" and payload.user_id != bot.user.id:
         channel = bot.get_channel(payload.channel_id)
         msg = await channel.fetch_message(payload.message_id)
-        await msg.add_reaction(payload.emoji)
+        embed = msg.embeds[0]
+        embedDic = embed.to_dict()
+        fields = embedDic.get('fields')
+        nome = ""
+        id_user = ""
+        index = 0
+        #print(payload.user_id)
+        for ind, x in enumerate(fields):
+            id_field = re.sub('\D', '', x['value'])
+            #print(id_field)
+            if int(id_field) == payload.user_id:
+                id_user = int(id_field)
+                index = ind
+        user = bot.get_user(id_user)
+        nome = user.name
+        print(nome)
+        print(id_user)
+        print(index)
+        nome += " ✅"
+        #print(user.name)
+        embed.set_field_at(index, name=nome, value=user.mention, inline=False)
+        embedDic = embed.to_dict()
+        fields = embedDic.get('fields')
+        confirmed = 0
+        for x in fields:
+            if "✅" in str(x['name']):
+                confirmed += + 1
+        embed.set_footer(text='\nConfirmados {}/{}'.format(confirmed, max_players_pummel))
+        await msg.edit(embed=embed)
+        print("check marked")
+    
+    elif str(payload.emoji) == "❎" and payload.user_id != bot.user.id:
+        channel = bot.get_channel(payload.channel_id)
+        msg = await channel.fetch_message(payload.message_id)
+        embed = msg.embeds[0]
+        embedDic = embed.to_dict()
+        fields = embedDic.get('fields')
+        nome = ""
+        id_user = ""
+        index = 0
+        #print(payload.user_id)
+        for ind, x in enumerate(fields):
+            id_field = re.sub('\D', '', x['value'])
+            #print(id_field)
+            if int(id_field) == payload.user_id:
+                id_user = int(id_field)
+                index = ind
+        user = bot.get_user(id_user)
+        nome = user.name
+        print(nome)
+        print(id_user)
+        print(index)
+        nome += " ❎"
+        #print(user.name)
+        embed.set_field_at(index, name=nome, value=user.mention, inline=False)
+        embedDic = embed.to_dict()
+        fields = embedDic.get('fields')
+        confirmed = 0
+        for x in fields:
+            if "✅" in str(x['name']):
+                confirmed += + 1
+        embed.set_footer(text='\nConfirmados {}/{}'.format(confirmed, max_players_pummel))
+        await msg.edit(embed=embed)
+        print("cross marked")
         
+    
+    elif payload.user_id != bot.get_user(gordo):
+        channel = bot.get_channel(payload.channel_id)
+        msg = await channel.fetch_message(payload.message_id)
+        await msg.add_reaction(payload.emoji)  
+    
+    
+    print(payload.event_type)
+    
+@bot.event  
+async def on_raw_reaction_remove(payload):
+    global max_players_pummel
+    if str(payload.emoji) == "✅" and payload.user_id != bot.user.id:
+        channel = bot.get_channel(payload.channel_id)
+        msg = await channel.fetch_message(payload.message_id)
+        embed = msg.embeds[0]
+        embedDic = embed.to_dict()
+        fields = embedDic.get('fields')
+        nome = ""
+        id_user = ""
+        index = 0
+        #print(payload.user_id)
+        for ind, x in enumerate(fields):
+            id_field = re.sub('\D', '', x['value'])
+            #print(id_field)
+            if int(id_field) == payload.user_id:
+                id_user = int(id_field)
+                index = ind
+        user = bot.get_user(id_user)
+        nome = user.name
+        print(nome)
+        print(id_user)
+        print(index)
+        nome += " ✅"
+        #print(user.name)
+        embed.set_field_at(index, name=nome, value=user.mention, inline=False)
+        embedDic = embed.to_dict()
+        fields = embedDic.get('fields')
+        confirmed = 0
+        for x in fields:
+            if "✅" in str(x['name']):
+                confirmed += + 1
+        embed.set_footer(text='\nConfirmados {}/{}'.format(confirmed, max_players_pummel))
+        await msg.edit(embed=embed)
+        print("check marked")
+    
+    elif str(payload.emoji) == "❎" and payload.user_id != bot.user.id:
+        channel = bot.get_channel(payload.channel_id)
+        msg = await channel.fetch_message(payload.message_id)
+        embed = msg.embeds[0]
+        embedDic = embed.to_dict()
+        fields = embedDic.get('fields')
+        nome = ""
+        id_user = ""
+        index = 0
+        #print(payload.user_id)
+        for ind, x in enumerate(fields):
+            id_field = re.sub('\D', '', x['value'])
+            #print(id_field)
+            if int(id_field) == payload.user_id:
+                id_user = int(id_field)
+                index = ind
+        user = bot.get_user(id_user)
+        nome = user.name
+        print(nome)
+        print(id_user)
+        print(index)
+        nome += " ❎"
+        #print(user.name)
+        embed.set_field_at(index, name=nome, value=user.mention, inline=False)
+        embedDic = embed.to_dict()
+        fields = embedDic.get('fields')
+        confirmed = 0
+        for x in fields:
+            if "✅" in str(x['name']):
+                confirmed += + 1
+        embed.set_footer(text='\nConfirmados {}/{}'.format(confirmed, max_players_pummel))
+        await msg.edit(embed=embed)
+        print("cross marked")
+        
+    print(payload.event_type)
+    
 #Disconnectes Gordo from voice channels
 @bot.event 
 async def on_voice_state_update(member, before, after):
