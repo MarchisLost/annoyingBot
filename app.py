@@ -58,13 +58,7 @@ async def test(ctx):
     songList = spotify.getSongs(pl_id)
     for x in songList:
         print(x) 
-
-
-def EmbedPummel():
-    embedVar = discord.Embed(title="Pummel!!", description="Sessão de Pummel Party hoje?", color=0xe91e63)
-    
 #Commands to invite people for games -------------------------------------
-
 #Universal One
 @bot.command(name='invite')
 async def invite(ctx, role):
