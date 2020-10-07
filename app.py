@@ -32,7 +32,6 @@ fontes = int(os.getenv('DISCORD_FONTES'))
 tomas = int(os.getenv('DISCORD_TOMAS'))
 vera = int(os.getenv('DISCORD_VERA'))
 tiagoULP = int(os.getenv('DISCORD_TIAGO_ULP'))
-pummel_id = int(os.getenv('DISCORD_PUMMEL'))
 
 #Gets the image path
 img_path = 'tsm.jpeg'
@@ -72,7 +71,7 @@ async def invite(ctx, role):
     #confirmed = 0
     #Create embed
     embedVar = discord.Embed(title="Sessão de " + role.name + " hoje?", description=" ", color=role.colour)
-    members = ctx.guild.get_role(pummel_id).members
+    members = role.members
     for x in members:
         embedVar.add_field(name=x.name, value=x.mention, inline=False)
     #embedVar.set_footer(text='\nConfirmados {}/{}'.format(confirmed, max_players_pummel))
@@ -84,19 +83,10 @@ async def invite(ctx, role):
 #Pummel Party
 @bot.command()
 async def pummel(ctx):
-    global max_players_pummel
-    confirmed = 0
-    print('pummel by: ', ctx.author)
+    print('pummel_old by: ', ctx.author)
     await ctx.channel.purge(limit=1)
-    #Create embed
-    embedVar = discord.Embed(title="Pummel!!", description="Sessão de Pummel Party hoje?", color=0xe91e63)
-    members = ctx.guild.get_role(pummel_id).members
-    for x in members:
-        embedVar.add_field(name=x.name, value=x.mention, inline=False)
-    embedVar.set_footer(text='\nConfirmados {}/{}'.format(confirmed, max_players_pummel))
-    mess = await ctx.channel.send(embed=embedVar)
-    await mess.add_reaction("✅")
-    await mess.add_reaction("❎")
+    await ctx.channel.send('Alguém quer vir Pummel Party?\n' + bot.get_user(march).mention + ' ' + bot.get_user(sheep).mention + ' ' + bot.get_user(bacon).mention + ' ' + bot.get_user(mata).mention)
+
 
 #Rainbow Six Siege
 @bot.command()
