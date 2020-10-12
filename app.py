@@ -404,8 +404,8 @@ class Song:
                                color=discord.Color.blurple())
                  .add_field(name='Duration', value=self.source.duration)
                  .add_field(name='Requested by', value=self.requester.mention)
-                 .add_field(name='Uploader', value='[{0.source.uploader}]({0.source.uploader_url})'.format(self))
-                 .add_field(name='URL', value='[Click]({0.source.url})'.format(self))
+                 #.add_field(name='Uploader', value='[{0.source.uploader}]({0.source.uploader_url})'.format(self))
+                 #.add_field(name='URL', value='[Click]({0.source.url})'.format(self))
                  .set_footer(text="btw, mata's a bitch")
                  .set_thumbnail(url=self.source.thumbnail))
         return embed
@@ -486,17 +486,30 @@ class VoiceState:
                 except asyncio.TimeoutError:
                     self.client.loop.create_task(self.stop())
                     return
-
+                
             self.current.source.volume = self._volume
             self.voice.play(self.current.source, after=self.play_next_song)
             await self.current.source.channel.send(embed=self.current.create_embed())
-
+            songList.pop(0)
+            for i, x in enumerate(songList):
+                search = x
+                print(search)
+                print(i)
+                try:
+                    source = await YTDLSource.create_source(self, search, loop=self.client.loop)
+                    song = Song(source)
+                    if (i == 0):
+                        await self.voice_state.songs.put(song)
+                    else:
+                        songList[i] = str(source)
+                        print(songList[i])
+                except:
+                    print("erro")
             await self.next.wait()
 
     def play_next_song(self, error=None):
         if error:
             raise VoiceError(str(error))
-        songList.pop(0)
         self.next.set()
 
     def skip(self):
@@ -684,7 +697,7 @@ class Music(commands.Cog):
         end = start + items_per_page
 
         queue = ''
-        for i, song in enumerate(songList[start:end], start=start):
+        for i, song in enumerate(songList):
             queue += "%s - %s \n" % (i+1, song)
         print(playlistName)
         embed = (discord.Embed(description='**{} tracks:**\n\n{}'.format(len(songList), queue))
@@ -776,16 +789,22 @@ class Music(commands.Cog):
                     song = Song(source)
                     await ctx.voice_state.songs.put(song)
         else:
-
-            async with ctx.typing():
+            #await ctx.send('Enqueued ' + str(len(songList)) + ' songs!')
+            songList.append(txt)
+            for i, x in enumerate(songList):
+                search = x     
                 try:
                     source = await YTDLSource.create_source(ctx, search, loop=self.client.loop)
                 except YTDLError as e:
                     await ctx.send('An error occurred while processing this request: {}'.format(str(e)))
                 else:
                     song = Song(source)
-                    await ctx.voice_state.songs.put(song)
-                    await ctx.send('Enqueued {}'.format(str(source)))
+                    if (i == 0):
+                        await ctx.voice_state.songs.put(song)
+                    else:
+                        songList[i] = str(source)
+                        print(songList[i])
+
 
     @_join.before_invoke
     @_play.before_invoke
