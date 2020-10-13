@@ -19,6 +19,10 @@ from pprint import pprint
 
 import re
 
+#Necessário para o código funcionar no Spyder e noutros IDE's
+import nest_asyncio
+nest_asyncio.apply()
+
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 # Gets user id's
@@ -770,6 +774,7 @@ class Music(commands.Cog):
         txt = str(search)
         songList1 = []
         if (txt.__contains__('spotify')):
+            """Adding songs/playlists/albums from spotify"""
             try:
                 songList1, playlistName = spotify.getSongs(txt)
                 songList.extend(songList1)
@@ -778,7 +783,7 @@ class Music(commands.Cog):
                 songList1, playlistName = spotify.getSongs(pl_id)
                 songList.extend(songList1)
                 await ctx.send('I did not find the music/playlist you requested, in the mean time listen to this one made by my daddy!')
-            
+            """Adding each song to the queue"""
             for x in songList:
                 search = x     
                 try:
@@ -789,21 +794,15 @@ class Music(commands.Cog):
                     song = Song(source)
                     await ctx.voice_state.songs.put(song)
         else:
-            #await ctx.send('Enqueued ' + str(len(songList)) + ' songs!')
-            songList.append(txt)
-            for i, x in enumerate(songList):
-                search = x     
-                try:
-                    source = await YTDLSource.create_source(ctx, search, loop=self.client.loop)
-                except YTDLError as e:
-                    await ctx.send('An error occurred while processing this request: {}'.format(str(e)))
-                else:
-                    song = Song(source)
-                    if (i == 0):
-                        await ctx.voice_state.songs.put(song)
-                    else:
-                        songList[i] = str(source)
-                        print(songList[i])
+            # Single song add (Youtube)
+            try:
+                source = await YTDLSource.create_source(ctx, search, loop=self.client.loop)
+            except YTDLError as e:
+                await ctx.send('An error occurred while processing this request: {}'.format(str(e)))
+            else:
+                song = Song(source)
+                songList.append(source)
+                await ctx.voice_state.songs.put(song)
 
 
     @_join.before_invoke
