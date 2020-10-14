@@ -701,7 +701,7 @@ class Music(commands.Cog):
         end = start + items_per_page
 
         queue = ''
-        for i, song in enumerate(songList):
+        for i, song in enumerate(songList[start:end], start=start):
             queue += "%s - %s \n" % (i+1, song)
         print(playlistName)
         embed = (discord.Embed(description='**{} tracks:**\n\n{}'.format(len(songList), queue))
@@ -784,7 +784,7 @@ class Music(commands.Cog):
                 songList.extend(songList1)
                 await ctx.send('I did not find the music/playlist you requested, in the mean time listen to this one made by my daddy!')
             """Adding each song to the queue"""
-            for x in songList:
+            for i , x in enumerate(songList):
                 search = x     
                 try:
                     source = await YTDLSource.create_source(ctx, search, loop=self.client.loop)
@@ -792,6 +792,7 @@ class Music(commands.Cog):
                     await ctx.send('An error occurred while processing this request: {}'.format(str(e)))
                 else:
                     song = Song(source)
+                    songList[i] = source
                     await ctx.voice_state.songs.put(song)
         else:
             # Single song add (Youtube)

@@ -50,20 +50,3 @@ def getSongs(id):
                 song = track['artists'][0]['name'] + " " + track['name'] + " audio lyrics"
                 songList.append(song)
         return songList, playlistName
-    
-"""    code from an example online
-
-playlists = sp.user_playlists(username)
-for playlist in playlists['items']:
-    if playlist['owner']['id'] == username:
-        print()
-        print(playlist['name'])
-        print('  total tracks', playlist['tracks']['total'])
-        results = sp.user_playlist(username, playlist['id'], fields="tracks,next")
-        tracks = results['tracks']
-        show_tracks(tracks)
-        while tracks['next']:
-            tracks = sp.next(tracks)
-            show_tracks(tracks)
-            
-"""
