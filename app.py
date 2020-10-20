@@ -60,7 +60,8 @@ async def test(ctx):
     await ctx.send("123")
     songList = spotify.getSongs(pl_id)
     for x in songList:
-        print(x) 
+        print(x)
+    
 #Commands to invite people for games -------------------------------------
 #Universal One
 @bot.command(name='invite')
@@ -76,44 +77,21 @@ async def invite(ctx, role):
     #Create embed
     embedVar = discord.Embed(title="Sessão de " + role.name + " hoje?", description=" ", color=role.colour)
     members = role.members
+
+    #Check if it is r6, if so it adds a message
+    if role.name == 'Rainbow':
+        embedVar.add_field(name='SHEEP!', value='Instala o Rainbow!!!!', inline=False)
+
+    #Next 2 lines are to tag the members of that role
     for x in members:
         embedVar.add_field(name=x.name, value=x.mention, inline=False)
     #embedVar.set_footer(text='\nConfirmados {}/{}'.format(confirmed, max_players_pummel))
+
+    #After the embeb is created this reacts with the 2 emojis of yay or nay
     mess = await ctx.channel.send(embed=embedVar)
     await mess.add_reaction("✅")
     await mess.add_reaction("❎")
     
-    
-#Pummel Party
-@bot.command()
-async def pummel(ctx):
-    print('pummel_old by: ', ctx.author)
-    await ctx.channel.purge(limit=1)
-    await ctx.channel.send('Alguém quer vir Pummel Party?\n' + bot.get_user(march).mention + ' ' + bot.get_user(sheep).mention + ' ' + bot.get_user(bacon).mention + ' ' + bot.get_user(mata).mention)
-
-
-#Rainbow Six Siege
-@bot.command()
-async def r6(ctx):
-    print('r6 by: ', ctx.author)
-    await ctx.channel.purge(limit=1)
-    await ctx.channel.send('Alguém quer vir rainbow?\n Sheep Instala o rainbow!\n' + bot.get_user(march).mention + ' ' + bot.get_user(sheep).mention + ' ' + bot.get_user(bacon).mention + ' ' + bot.get_user(mata).mention + ' ' + bot.get_user(fontes).mention)
-
-#Among Us
-@bot.command()
-async def amongus(ctx):
-    print('among us by: ', ctx.author)
-    await ctx.channel.purge(limit=1)
-    await ctx.channel.send('Sessão de Among Us?\n' + bot.get_user(march).mention + ' ' + bot.get_user(sheep).mention + ' ' + bot.get_user(bacon).mention + ' ' + bot.get_user(mata).mention + ' ' + bot.get_user(fontes).mention + ' ' + bot.get_user(tomas).mention + ' ' + bot.get_user(vera).mention + ' ' + bot.get_user(tiagoULP).mention)
-
-#Clash - Lol        
-@bot.command()
-async def clash(ctx):
-    print('clash by: ', ctx.author)
-    await ctx.channel.purge(limit=1)
-    await ctx.channel.send('Clash este fds? Alguém não pode?\n' + bot.get_user(march).mention + ' ' + bot.get_user(tiago).mention + ' ' + bot.get_user(bacon).mention + ' ' + bot.get_user(mata).mention + ' ' + bot.get_user(fontes).mention)
-#Ended  --  Commands to invite people for games -------------------------------------
-
 #Comand to kick bifes - change to be able to kick @someone
 @bot.command()
 async def bifes(ctx):
@@ -128,8 +106,7 @@ async def bifes(ctx):
 @bot.command()
 async def help(ctx):
     print('help by: ', ctx.author)
-    await ctx.channel.send(bot.get_user(march).mention + ' ' + bot.get_user(sheep).mention + '\nEsta aqui um nabo a pedir ajuda...\nPergunta a um destes dois se eles nao responderem!\nPara a musica é so !play song name/spotify link')
-
+    await ctx.channel.send(bot.get_user(march).mention + ' ' + bot.get_user(sheep).mention + '\nEsta aqui um nabo a pedir ajuda...\nPergunta a um destes dois se eles nao responderem!\nPara a musica é so !play song name/spotify link\n Para jogos é so !invite @role')
 
 #Deletes Gordo's messages
 @bot.event   
@@ -139,6 +116,7 @@ async def on_message(message):
         print('message author: ', message.author)
         await message.channel.purge(limit=1)
     await bot.process_commands(message)
+    #Annoy mata everytime he writes something
     if message.author == bot.get_user(mata):
         num = random.random() * 100
         #print(num)
@@ -149,6 +127,7 @@ async def on_message(message):
            
 mensagem = ["You're still a bitch tho ", "No you", "Já estou farto de te ouvir bitch", "Vai estudar!", "A tua mãe chamou-te", "Os teus Celtics são uma porcaria!", "Ouvi dizer que o Sheep te insultou", "Ouvi dizer que o March te insultou", "U gay", "My middle finger get's a boner when i think of you ;)", "Roses are red, violets are blue, I've got five fingers and the middle one is for you ;)", "Life is short and so is your penis.", "You are cordially invited to Go Fuck Yourself :D"]
 
+#Functions that get the user reations (yay or nay) and changes the emebeb to display their answers
 async def embedYes(payload):
     global max_players_pummel
     channel = bot.get_channel(payload.channel_id)
