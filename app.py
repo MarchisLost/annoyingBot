@@ -19,6 +19,9 @@ import spotify
 import re
 import logging
 
+# Declaring intents
+intents = discord.Intents.all()
+
 logging.basicConfig(filename='watchdog.log', format='%(asctime)s - %(name)s \
 - %(levelname)s - %(message)s', level=logging.INFO)
 
@@ -84,7 +87,8 @@ max_players_pummel = 8
 
 # Created the bot with a prefix
 bot = commands.Bot(command_prefix='!',
-                   description="Discord bot created by March & Sheep")
+                   description="Discord bot created by March & Sheep",
+                   intents=intents)
 
 # Removes the default help command so we can create a new one
 bot.remove_command('help')
@@ -125,6 +129,7 @@ async def invite(ctx, role):
 
     # Next 2 lines are to tag the members of that role
     for x in members:
+        logger.info('Invited %s', x.name)
         embedVar.add_field(name=x.name, value=x.mention, inline=False)
     # embedVar.set_footer(text='\nConfirmados {}/{}'
     #                    .format(confirmed, max_players_pummel))
