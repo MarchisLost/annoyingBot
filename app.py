@@ -18,10 +18,38 @@ import spotify
 from pprint import pprint
 
 import re
+import logging
+
+logging.basicConfig(filename='watchdog.log',format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+
+# create logger
+logger = logging.getLogger('watchdog')
+logger.setLevel(logging.INFO)
+
+# create console handler and set level to debug
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+
+# create formatter
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+# add formatter to ch
+ch.setFormatter(formatter)
+
+# add ch to logger
+logger.addHandler(ch)
+
+""" Available ways to log files """
+#logger.debug('debug message')
+#logger.info('info message')
+#logger.warning('warn message')
+#logger.error('error message')
+#logger.critical('critical message')
+
 
 #Necessário para o código funcionar no Spyder e noutros IDE's
-import nest_asyncio
-nest_asyncio.apply()
+#import nest_asyncio
+#nest_asyncio.apply()
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -57,15 +85,14 @@ bot.remove_command('help') #Removes the default help command so we can create a 
 
 @bot.command()
 async def test(ctx):
+    logger.info("%s -> %s",ctx.author.name, ctx.message.content)
     await ctx.send("123")
-    songList = spotify.getSongs(pl_id)
-    for x in songList:
-        print(x)
     
 #Commands to invite people for games -------------------------------------
 #Universal One
 @bot.command(name='invite')
 async def invite(ctx, role):
+    logger.info("%s -> %s",ctx.author.name, ctx.message.content)
     await ctx.channel.purge(limit=1)
     print(str(role))
     role = int(re.sub('\D', '', role))
@@ -95,6 +122,7 @@ async def invite(ctx, role):
 #Comand to kick bifes - change to be able to kick @someone
 @bot.command()
 async def bifes(ctx):
+    logger.info("%s -> %s",ctx.author.name, ctx.message.content)
     print('bifes kicked by: ', ctx.author)
     await ctx.channel.purge(limit=1)
     for member in ctx.guild.members:
@@ -105,6 +133,7 @@ async def bifes(ctx):
 #New help command
 @bot.command()
 async def help(ctx):
+    logger.info("%s -> %s",ctx.author.name, ctx.message.content)
     print('help by: ', ctx.author)
     await ctx.channel.send(bot.get_user(march).mention + ' ' + bot.get_user(sheep).mention + '\nEsta aqui um nabo a pedir ajuda...\nPergunta a um destes dois se eles nao responderem!\nPara a musica é so !play song name/spotify link\n Para jogos é so !invite @role')
 
@@ -808,5 +837,6 @@ async def on_ready():
     #Gets servers that the bot is connected to
     for i in range(len(bot.guilds)):
         print('  ', bot.guilds[i].name)
+    logger.info('Bot started')
     
 bot.run(TOKEN)
