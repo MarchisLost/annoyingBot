@@ -15,12 +15,12 @@ from async_timeout import timeout
 import youtube_dl
 
 import spotify
-from pprint import pprint
 
 import re
 import logging
 
-logging.basicConfig(filename='watchdog.log',format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logging.basicConfig(filename='watchdog.log', format='%(asctime)s - %(name)s \
+- %(levelname)s - %(message)s', level=logging.INFO)
 
 # create logger
 logger = logging.getLogger('watchdog')
@@ -31,7 +31,10 @@ ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
 
 # create formatter
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter('%(asctime)s'
+                              '- %(name)s'
+                              '- %(levelname)s'
+                              '- %(message)s')
 
 # add formatter to ch
 ch.setFormatter(formatter)
@@ -40,16 +43,16 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 """ Available ways to log files """
-#logger.debug('debug message')
-#logger.info('info message')
-#logger.warning('warn message')
-#logger.error('error message')
-#logger.critical('critical message')
+# logger.debug('debug message')
+# logger.info('info message')
+# logger.warning('warn message')
+# logger.error('error message')
+# logger.critical('critical message')
 
 
-#Necessário para o código funcionar no Spyder e noutros IDE's
-#import nest_asyncio
-#nest_asyncio.apply()
+# Necessário para o código funcionar no Spyder e noutros IDE's
+# import nest_asyncio
+# nest_asyncio.apply()
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -65,7 +68,7 @@ tomas = int(os.getenv('DISCORD_TOMAS'))
 vera = int(os.getenv('DISCORD_VERA'))
 tiagoULP = int(os.getenv('DISCORD_TIAGO_ULP'))
 
-#Gets the image path
+# Gets the image path
 img_path = 'tsm.jpeg'
 pfp = open(img_path, 'rb')
 img = pfp.read()
@@ -79,84 +82,118 @@ playlistName = ""
 confirmed = 0
 max_players_pummel = 8
 
-#Created the bot with a prefix
-bot = commands.Bot(command_prefix='!', description="Discord bot created by March & Sheep")
-bot.remove_command('help') #Removes the default help command so we can create a new one
+# Created the bot with a prefix
+bot = commands.Bot(command_prefix='!',
+                   description="Discord bot created by March & Sheep")
+
+# Removes the default help command so we can create a new one
+bot.remove_command('help')
+
 
 @bot.command()
 async def test(ctx):
-    logger.info("%s -> %s",ctx.author.name, ctx.message.content)
+    logger.info("%s -> %s", ctx.author.name, ctx.message.content)
     await ctx.send("123")
-    
-#Commands to invite people for games -------------------------------------
-#Universal One
+
+
+# Commands to invite people for games -------------------------------------
+# Universal One
 @bot.command(name='invite')
 async def invite(ctx, role):
-    logger.info("%s -> %s",ctx.author.name, ctx.message.content)
+    logger.info("%s -> %s", ctx.author.name, ctx.message.content)
     await ctx.channel.purge(limit=1)
     print(str(role))
-    role = int(re.sub('\D', '', role))
+    role = int(re.sub(r'\D', '', role))
     print(str(role))
     role = ctx.guild.get_role(role)
     print(role.name)
     global max_players_pummel
-    #confirmed = 0
-    #Create embed
-    embedVar = discord.Embed(title="Sessão de " + role.name + " hoje?", description=" ", color=role.colour)
+    # confirmed = 0
+    # Create embed
+    embedVar = discord.Embed(title="Sessão de "
+                             + role.name
+                             + " hoje?",
+                             description=" ",
+                             color=role.colour)
     members = role.members
 
-    #Check if it is r6, if so it adds a message
+    # Check if it is r6, if so it adds a message
     if role.name == 'Rainbow':
-        embedVar.add_field(name='SHEEP!', value='Instala o Rainbow!!!!', inline=False)
+        embedVar.add_field(name='SHEEP!',
+                           value='Instala o Rainbow!!!!',
+                           inline=False)
 
-    #Next 2 lines are to tag the members of that role
+    # Next 2 lines are to tag the members of that role
     for x in members:
         embedVar.add_field(name=x.name, value=x.mention, inline=False)
-    #embedVar.set_footer(text='\nConfirmados {}/{}'.format(confirmed, max_players_pummel))
+    # embedVar.set_footer(text='\nConfirmados {}/{}'
+    #                    .format(confirmed, max_players_pummel))
 
-    #After the embeb is created this reacts with the 2 emojis of yay or nay
+    # After the embeb is created this reacts with the 2 emojis of yay or nay
     mess = await ctx.channel.send(embed=embedVar)
     await mess.add_reaction("✅")
     await mess.add_reaction("❎")
-    
-#Comand to kick bifes - change to be able to kick @someone
+
+
+# Comand to kick bifes - change to be able to kick @someone
 @bot.command()
 async def bifes(ctx):
-    logger.info("%s -> %s",ctx.author.name, ctx.message.content)
+    logger.info("%s -> %s", ctx.author.name, ctx.message.content)
     print('bifes kicked by: ', ctx.author)
     await ctx.channel.purge(limit=1)
     for member in ctx.guild.members:
-        if member.id == int("307621482186670082"): #bifes id
+        if member.id == int("307621482186670082"):  # bifes id
             bifes = member
-    await bifes.kick(reason='You were being annoying dude, pls take it easy, thank you!')
+    await bifes.kick(reason='You were being annoying dude, '
+                     'pls take it easy, thank you!')
 
-#New help command
+
+# New help command
 @bot.command()
 async def help(ctx):
-    logger.info("%s -> %s",ctx.author.name, ctx.message.content)
+    logger.info("%s -> %s", ctx.author.name, ctx.message.content)
     print('help by: ', ctx.author)
-    await ctx.channel.send(bot.get_user(march).mention + ' ' + bot.get_user(sheep).mention + '\nEsta aqui um nabo a pedir ajuda...\nPergunta a um destes dois se eles nao responderem!\nPara a musica é so !play song name/spotify link\n Para jogos é so !invite @role')
+    await ctx.channel.send(bot.get_user(march).mention
+                           + ' ' + bot.get_user(sheep).mention
+                           + '\nEsta aqui um nabo a pedir ajuda...'
+                           '\nPergunta a um destes dois se eles nao responderem!'
+                           '\nPara a musica é so !play song name/spotify link'
+                           '\n Para jogos é so !invite @role')
 
-#Deletes Gordo's messages
-@bot.event   
+
+# Deletes Gordo's messages
+@bot.event
 async def on_message(message):
-    #Message Deleter-------
+    # Message Deleter-------
     if message.author == bot.get_user(gordo):
         print('message author: ', message.author)
         await message.channel.purge(limit=1)
     await bot.process_commands(message)
-    #Annoy mata everytime he writes something
+    # Annoy mata everytime he writes something
     if message.author == bot.get_user(mata):
         num = random.random() * 100
-        #print(num)
+        # print(num)
         if num >= 50:
             await message.add_reaction('🖕')
         elif num < 10:
             await message.channel.send(message.author.mention + " " + random.choice(mensagem))
-           
-mensagem = ["You're still a bitch tho ", "No you", "Já estou farto de te ouvir bitch", "Vai estudar!", "A tua mãe chamou-te", "Os teus Celtics são uma porcaria!", "Ouvi dizer que o Sheep te insultou", "Ouvi dizer que o March te insultou", "U gay", "My middle finger get's a boner when i think of you ;)", "Roses are red, violets are blue, I've got five fingers and the middle one is for you ;)", "Life is short and so is your penis.", "You are cordially invited to Go Fuck Yourself :D"]
 
-#Functions that get the user reations (yay or nay) and changes the emebeb to display their answers
+mensagem = ["You're still a bitch tho ",
+            "No you",
+            "Já estou farto de te ouvir bitch",
+            "Vai estudar!",
+            "A tua mãe chamou-te",
+            "Os teus Celtics são uma porcaria!",
+            "Ouvi dizer que o Sheep te insultou",
+            "Ouvi dizer que o March te insultou",
+            "U gay",
+            "My middle finger get's a boner when i think of you ;)",
+            "Roses are red, violets are blue, I've got five fingers and the middle one is for you ;)",
+            "Life is short and so is your penis.",
+            "You are cordially invited to Go Fuck Yourself :D"]
+
+
+# Functions that get the user reations (yay or nay) and changes the emebeb to display their answers
 async def embedYes(payload):
     global max_players_pummel
     channel = bot.get_channel(payload.channel_id)
@@ -167,10 +204,10 @@ async def embedYes(payload):
     nome = ""
     id_user = ""
     index = 0
-    #print(payload.user_id)
+    # print(payload.user_id)
     for ind, x in enumerate(fields):
-        id_field = re.sub('\D', '', x['value'])
-        #print(id_field)
+        id_field = re.sub(r'\D', '', x['value'])
+        # print(id_field)
         if int(id_field) == payload.user_id:
             id_user = int(id_field)
             index = ind
@@ -180,7 +217,7 @@ async def embedYes(payload):
     print(id_user)
     print(index)
     nome += " ✅"
-    #print(user.name)
+    # print(user.name)
     embed.set_field_at(index, name=nome, value=user.mention, inline=False)
     embedDic = embed.to_dict()
     fields = embedDic.get('fields')
@@ -188,9 +225,10 @@ async def embedYes(payload):
     for x in fields:
         if "✅" in str(x['name']):
             confirmed += + 1
-    #embed.set_footer(text='\nConfirmados {}/{}'.format(confirmed, max_players_pummel))
+    # embed.set_footer(text='\nConfirmados {}/{}'.format(confirmed, max_players_pummel))
     await msg.edit(embed=embed)
     print("check marked")
+
 
 async def embedNo(payload):
     channel = bot.get_channel(payload.channel_id)
@@ -201,10 +239,10 @@ async def embedNo(payload):
     nome = ""
     id_user = ""
     index = 0
-    #print(payload.user_id)
+    # print(payload.user_id)
     for ind, x in enumerate(fields):
-        id_field = re.sub('\D', '', x['value'])
-        #print(id_field)
+        id_field = re.sub(r'\D', '', x['value'])
+        # print(id_field)
         if int(id_field) == payload.user_id:
             id_user = int(id_field)
             index = ind
@@ -214,7 +252,7 @@ async def embedNo(payload):
     print(id_user)
     print(index)
     nome += " ❎"
-    #print(user.name)
+    # print(user.name)
     embed.set_field_at(index, name=nome, value=user.mention, inline=False)
     embedDic = embed.to_dict()
     fields = embedDic.get('fields')
@@ -222,62 +260,63 @@ async def embedNo(payload):
     for x in fields:
         if "✅" in str(x['name']):
             confirmed += + 1
-   #embed.set_footer(text='\nConfirmados {}/{}'.format(confirmed, max_players_pummel))
+    # embed.set_footer(text='\nConfirmados {}/{}'.format(confirmed, max_players_pummel))
     await msg.edit(embed=embed)
     print("cross marked")
 
-@bot.event   
+
+@bot.event
 async def on_raw_reaction_add(payload):
-    
     if str(payload.emoji) == "✅" and payload.user_id != bot.user.id:
         await embedYes(payload)
-        
-    
+
     elif str(payload.emoji) == "❎" and payload.user_id != bot.user.id:
         await embedNo(payload)
-        
+
     elif payload.user_id != bot.get_user(gordo):
         channel = bot.get_channel(payload.channel_id)
         msg = await channel.fetch_message(payload.message_id)
-        await msg.add_reaction(payload.emoji)  
+        await msg.add_reaction(payload.emoji)
 
-@bot.event  
+
+@bot.event
 async def on_raw_reaction_remove(payload):
     global max_players_pummel
     if str(payload.emoji) == "✅" and payload.user_id != bot.user.id:
         await embedYes(payload)
-    
+
     elif str(payload.emoji) == "❎" and payload.user_id != bot.user.id:
         await embedNo(payload)
-        
-#Disconnectes Gordo from voice channels
-@bot.event 
+
+
+# Disconnectes Gordo from voice channels
+@bot.event
 async def on_voice_state_update(member, before, after):
-    now = datetime.now()   
-    #Simple channel movements log 
+    now = datetime.now()
+    # Simple channel movements log
     if before.channel is None:
         print(now, "-", member, "joined", after.channel)
     elif after.channel is None:
         print(now, "-", member, "left", before.channel)
     else:
         print(now, "-", member, "left", before.channel, "and joined", after.channel)
-    
-    #Disconnecting on specific user joining voice channels
+
+    # Disconnecting on specific user joining voice channels
     if member == bot.get_user(gordo):
         print('member disconnected: ', member)
         await member.edit(voice_channel=None)
-  
-#Removes Gordo's Professor chaos role- needs administrator role
-@bot.event 
+
+
+# Removes Gordo's Professor chaos role- needs administrator role
+@bot.event
 async def on_member_update(before, after):
-    #This is to check if someone on the hitlist changed roles
+    # This is to check if someone on the hitlist changed roles
     sleep(5)
     if after == bot.get_user(gordo) and str(after.top_role) == "Professor Chaos":
         list_roles = after.roles.copy()
-        
-        #This is to check if professor chaos aka bitch is one of the roles and if it is, deletes it from the user
+        # This is to check if professor chaos aka bitch is one of the roles and if it is, deletes it from the user
         for index, x in enumerate(list_roles, start=0):
-            #Getting index of "bitch"
+            # Getting index of "bitch"
             if str(x) == "Professor Chaos":
                 index_role = index
                 del list_roles[index_role]
@@ -289,11 +328,14 @@ async def on_member_update(before, after):
 # Silence useless bug reports messages
 youtube_dl.utils.bug_reports_message = lambda: ''
 
+
 class VoiceError(Exception):
     pass
 
+
 class YTDLError(Exception):
     pass
+
 
 class YTDLSource(discord.PCMVolumeTransformer):
     YTDL_OPTIONS = {
@@ -403,6 +445,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
 
         return ', '.join(duration)
 
+
 class Song:
     __slots__ = ('source', 'requester')
 
@@ -416,11 +459,12 @@ class Song:
                                color=discord.Color.blurple())
                  .add_field(name='Duration', value=self.source.duration)
                  .add_field(name='Requested by', value=self.requester.mention)
-                 #.add_field(name='Uploader', value='[{0.source.uploader}]({0.source.uploader_url})'.format(self))
-                 #.add_field(name='URL', value='[Click]({0.source.url})'.format(self))
+                 # .add_field(name='Uploader', value='[{0.source.uploader}]({0.source.uploader_url})'.format(self))
+                 # .add_field(name='URL', value='[Click]({0.source.url})'.format(self))
                  .set_footer(text="btw, mata's a bitch")
                  .set_thumbnail(url=self.source.thumbnail))
         return embed
+
 
 class SongQueue(asyncio.Queue):
     def __getitem__(self, item):
@@ -443,6 +487,7 @@ class SongQueue(asyncio.Queue):
 
     def remove(self, index: int):
         del self._queue[index]
+
 
 class VoiceState:
     def __init__(self, client: commands.Bot, ctx: commands.Context):
@@ -498,7 +543,7 @@ class VoiceState:
                 except asyncio.TimeoutError:
                     self.client.loop.create_task(self.stop())
                     return
-                
+
             self.current.source.volume = self._volume
             self.voice.play(self.current.source, after=self.play_next_song)
             await self.current.source.channel.send(embed=self.current.create_embed())
@@ -515,7 +560,7 @@ class VoiceState:
                     else:
                         songList[i] = str(source)
                         print(songList[i])
-                except:
+                finally:
                     print("erro")
             await self.next.wait()
 
@@ -536,6 +581,7 @@ class VoiceState:
         if self.voice:
             await self.voice.disconnect()
             self.voice = None
+
 
 class Music(commands.Cog):
     def __init__(self, client: commands.Bot):
@@ -679,16 +725,15 @@ class Music(commands.Cog):
                 ctx.voice_state.skip()
             else:
                 await ctx.send('Skip vote added, currently at **{}/3**'.format(total_votes))
-                
+
         else:
             await ctx.send('You have already voted to skip this song.')
         """
 
-
         # SEM VOTES
         await ctx.message.add_reaction('⏭')
         ctx.voice_state.skip()
-        
+
     @commands.command(name='queue')
     async def _queue(self, ctx: commands.Context, *, page: int = 1):
         """Shows the player's queue.
@@ -697,7 +742,7 @@ class Music(commands.Cog):
         """
         global songList
         global playlistName
-        
+
         if len(ctx.voice_state.songs) == 0:
             return await ctx.send('Empty queue.')
 
@@ -728,14 +773,14 @@ class Music(commands.Cog):
         await ctx.message.add_reaction('🔀')
         print(songList)
         for x in songList:
-                search = x     
-                try:
-                    source = await YTDLSource.create_source(ctx, search, loop=self.client.loop)
-                except YTDLError as e:
-                    await ctx.send('An error occurred while processing this request: {}'.format(str(e)))
-                else:
-                    song = Song(source)
-                    await ctx.voice_state.songs.put(song)
+            search = x
+            try:
+                source = await YTDLSource.create_source(ctx, search, loop=self.client.loop)
+            except YTDLError as e:
+                await ctx.send('An error occurred while processing this request: {}'.format(str(e)))
+            else:
+                song = Song(source)
+                await ctx.voice_state.songs.put(song)
 
     @commands.command(name='remove')
     async def _remove(self, ctx: commands.Context, index: int):
@@ -770,14 +815,14 @@ class Music(commands.Cog):
 
         This command automatically searches from various sites if no URL is provided.
         A list of these sites can be found here: https://rg3.github.io/youtube-dl/supportedsites.html
-        
+
         """
         global songList
         global playlistName
-        
+
         if not ctx.voice_state.voice:
             await ctx.invoke(self._join)
-        
+
         await ctx.message.add_reaction('✅')
         txt = str(search)
         songList1 = []
@@ -787,13 +832,14 @@ class Music(commands.Cog):
                 songList1, playlistName = spotify.getSongs(txt)
                 songList.extend(songList1)
                 await ctx.send('Enqueued ' + str(len(songList)) + ' songs!')
-            except:
+            finally:
                 songList1, playlistName = spotify.getSongs(pl_id)
                 songList.extend(songList1)
-                await ctx.send('I did not find the music/playlist you requested, in the mean time listen to this one made by my daddy!')
+                await ctx.send('I did not find the music/playlist you requested, '
+                               'in the mean time listen to this one made by my daddy!')
             """Adding each song to the queue"""
-            for i , x in enumerate(songList):
-                search = x     
+            for i, x in enumerate(songList):
+                search = x
                 try:
                     source = await YTDLSource.create_source(ctx, search, loop=self.client.loop)
                 except YTDLError as e:
@@ -813,7 +859,6 @@ class Music(commands.Cog):
                 songList.append(source)
                 await ctx.voice_state.songs.put(song)
 
-
     @_join.before_invoke
     @_play.before_invoke
     async def ensure_voice_state(self, ctx: commands.Context):
@@ -824,19 +869,23 @@ class Music(commands.Cog):
             if ctx.voice_client.channel != ctx.author.voice.channel:
                 raise commands.CommandError('Bot is already in a voice channel.')
 
+
 bot.add_cog(Music(bot))
-     
+
+
 @bot.event
 async def on_ready():
-    #Changes bot status
-    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='You !help if you dumb enough\nCreated by March & Sheep'))
-    #await bot.user.edit(avatar=img)
+    # Changes bot status
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching,
+                                                        name='You !help if you dumb enough\n'
+                                                        'Created by March & Sheep'))
+    # await bot.user.edit(avatar=img)
     print(f'{bot.user} is connected!')
     print('Logged in as: {0.user.name}'.format(bot))
     print('Connected on the following servers:')
-    #Gets servers that the bot is connected to
+    # Gets servers that the bot is connected to
     for i in range(len(bot.guilds)):
         print('  ', bot.guilds[i].name)
     logger.info('Bot started')
-    
+
 bot.run(TOKEN)
