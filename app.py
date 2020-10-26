@@ -47,7 +47,7 @@ playlistName = ""
 confirmed = 0
 max_players_pummel = 8
 
-#Created the bot with a prefix
+# Created the bot with a prefix
 bot = commands.Bot(command_prefix='!', description="Discord bot created by March & Sheep")
 bot.remove_command('help') #Removes the default help command so we can create a new one
 
