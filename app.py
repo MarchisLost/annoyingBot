@@ -88,6 +88,23 @@ async def invite(ctx, role):
     mess = await ctx.channel.send(embed=embedVar)
     await mess.add_reaction("✅")
     await mess.add_reaction("❎")
+
+""" #Command to play playlists pre defined 
+# ----------------------------- Doesnt work, bots cant command bots, code will stay here so i can cry when i look at it, ty ------------------------
+@bot.command(name='playlist')
+async def playlist(ctx, playlist):
+    playlistList = {'oldies': 'https://open.spotify.com/playlist/1Qhy7QA5Gfgc1Ugwpk5iXl'}
+    await ctx.channel.purge(limit=1)
+    print(str(playlist))
+    link = playlistList[playlist]
+    print('link:', link)
+    await _play(link)
+    channel = ctx.author.voice.channel
+    await channel.connect()
+    sleep(0.5) 
+    await ctx.channel.send('-play ' + link)
+    sleep(0.5)   
+    await ctx.voice_client.disconnect()"""
     
 #Comand to kick bifes - change to be able to kick @someone
 @bot.command()
@@ -160,6 +177,7 @@ async def embedYes(payload):
     await msg.edit(embed=embed)
     print("check marked")
 
+#Stuff about among us
 async def embedNo(payload):
     channel = bot.get_channel(payload.channel_id)
     msg = await channel.fetch_message(payload.message_id)
@@ -194,6 +212,7 @@ async def embedNo(payload):
     await msg.edit(embed=embed)
     print("cross marked")
 
+#Stuff about among us nr of players maybe?
 @bot.event   
 async def on_raw_reaction_add(payload):
     
@@ -209,6 +228,7 @@ async def on_raw_reaction_add(payload):
         msg = await channel.fetch_message(payload.message_id)
         await msg.add_reaction(payload.emoji)  
 
+#Stuff for the among us nr of players
 @bot.event  
 async def on_raw_reaction_remove(payload):
     global max_players_pummel
@@ -735,6 +755,11 @@ class Music(commands.Cog):
         
         await ctx.message.add_reaction('✅')
         txt = str(search)
+
+        #This is used to play a pre defined playlist where the name is oldies, so we dont have to copy paste the spotify link
+        if(str(search) == 'oldies'):
+            txt = 'https://open.spotify.com/playlist/1Qhy7QA5Gfgc1Ugwpk5iXl'
+
         songList1 = []
         if (txt.__contains__('spotify')):
             try:
