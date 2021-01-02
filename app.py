@@ -153,8 +153,8 @@ async def bifes(ctx):
     for member in ctx.guild.members:
         if member.id == int("307621482186670082"):  # bifes id
             bifes = member
-    await bifes.kick(reason='You were being annoying dude, '
-                     'pls take it easy, thank you!')
+            await bifes.kick(reason='You were being annoying dude, '
+                             'pls take it easy, thank you!')
 
 
 # New help command
@@ -202,6 +202,9 @@ mensagem = ["You're still a bitch tho ",
             "My middle finger get's a boner when i think of you ;)",
             "Roses are red, violets are blue, I've got five fingers and the middle one is for you ;)",
             "Life is short and so is your penis.",
+            "Life is full of disappointments and I just added you to the list.",
+            "If you were a vegetable you'd be a cabbitch",
+            "So if i typed 'idiot' into Googlem would your picture come up?",
             "You are cordially invited to Go Fuck Yourself :D"]
 
 
