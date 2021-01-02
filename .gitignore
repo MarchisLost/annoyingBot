@@ -134,4 +134,4 @@ dmypy.json
 mata.jpeg
 
 # Logs
-watchdog.log
+/logs

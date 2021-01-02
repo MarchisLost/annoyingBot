@@ -1,9 +1,7 @@
 import os
 import discord
 from discord.ext import commands
-from time import sleep
 from dotenv import load_dotenv
-from datetime import datetime
 
 import asyncio
 import functools
@@ -19,14 +17,20 @@ import spotify
 import re
 import logging
 
+from datetime import date
+today = date.today()
+
 # Declaring intents
 intents = discord.Intents.all()
 
-logging.basicConfig(filename='watchdog.log', format='%(asctime)s - %(name)s \
-- %(levelname)s - %(message)s', level=logging.INFO)
+d1 = str(today.strftime("%Y-%m-%d"))
+log_name = 'logs/' + d1 + '.log'
+
+logging.basicConfig(filename=log_name, format='%(asctime)s - %(name)s \
+- %(levelname)s - %(message)s', level=logging.DEBUG)
 
 # create logger
-logger = logging.getLogger('watchdog')
+logger = logging.getLogger('Watchdog')
 logger.setLevel(logging.INFO)
 
 # create console handler and set level to debug
@@ -102,15 +106,15 @@ async def test(ctx):
 
 # Commands to invite people for games -------------------------------------
 # Universal One
-@bot.command(name='invite')
+@bot.command(name='invite', aliases=['inv'])
 async def invite(ctx, role):
-    logger.info("%s -> %s", ctx.author.name, ctx.message.content)
+    logger.info("%s invited to %s", ctx.author.name, role)
     await ctx.channel.purge(limit=1)
-    print(str(role))
+    # print(str(role))
     role = int(re.sub(r'\D', '', role))
-    print(str(role))
+    # print(str(role))
     role = ctx.guild.get_role(role)
-    print(role.name)
+    logger.info("Invitation to play %s by ctx.author.name", role.name)
     global max_players_pummel
     # confirmed = 0
     # Create embed
@@ -170,8 +174,10 @@ async def help(ctx):
 @bot.event
 async def on_message(message):
     # Message Deleter-------
+    if message.author != bot.user:
+        logger.info("%s said -> %s", message.author.name, message.content)
     if message.author == bot.get_user(gordo):
-        print('message author: ', message.author)
+        logger.info("Deleted %s's message -> [%s]", message.author.name, message.content)
         await message.channel.purge(limit=1)
     await bot.process_commands(message)
     # Annoy mata everytime he writes something
@@ -181,7 +187,8 @@ async def on_message(message):
         if num >= 50:
             await message.add_reaction('🖕')
         elif num < 10:
-            await message.channel.send(message.author.mention + " " + random.choice(mensagem))
+            choice = await message.channel.send(message.author.mention + " " + random.choice(mensagem))
+            logger.info("said [%s] to mata", str(choice))
 
 mensagem = ["You're still a bitch tho ",
             "No you",
@@ -273,14 +280,17 @@ async def embedNo(payload):
 @bot.event
 async def on_raw_reaction_add(payload):
     if str(payload.emoji) == "✅" and payload.user_id != bot.user.id:
+        logger.info("User %s said Yes", bot.get_user(payload.user_id).name)
         await embedYes(payload)
 
     elif str(payload.emoji) == "❎" and payload.user_id != bot.user.id:
+        logger.info("User %s said No", bot.get_user(payload.user_id).name)
         await embedNo(payload)
 
-    elif payload.user_id != bot.get_user(gordo):
+    elif payload.user_id != bot.get_user(gordo) and payload.user_id != bot.user.id:
         channel = bot.get_channel(payload.channel_id)
         msg = await channel.fetch_message(payload.message_id)
+        logger.info("Copied %s's reaction", bot.get_user(payload.user_id).name)
         await msg.add_reaction(payload.emoji)
 
 
@@ -288,45 +298,67 @@ async def on_raw_reaction_add(payload):
 async def on_raw_reaction_remove(payload):
     global max_players_pummel
     if str(payload.emoji) == "✅" and payload.user_id != bot.user.id:
+        logger.info("User %s removed Yes", bot.get_user(payload.user_id).name)
         await embedYes(payload)
 
     elif str(payload.emoji) == "❎" and payload.user_id != bot.user.id:
+        logger.info("User %s removed No", bot.get_user(payload.user_id).name)
         await embedNo(payload)
 
 
 # Disconnectes Gordo from voice channels
 @bot.event
 async def on_voice_state_update(member, before, after):
-    now = datetime.now()
     # Simple channel movements log
     if before.channel is None:
-        print(now, "-", member, "joined", after.channel)
+        logger.info("%s joined %s", member, after.channel)
     elif after.channel is None:
-        print(now, "-", member, "left", before.channel)
+        logger.info("%s left %s", member, before.channel)
     else:
-        print(now, "-", member, "left", before.channel, "and joined", after.channel)
+        logger.info("%s left %s and joined %s", member, before.channel, after.channel)
 
     # Disconnecting on specific user joining voice channels
     if member == bot.get_user(gordo):
-        print('member disconnected: ', member)
+        logger.info('member disconnected: ', member)
         await member.edit(voice_channel=None)
 
 
 # Removes Gordo's Professor chaos role- needs administrator role
 @bot.event
 async def on_member_update(before, after):
-    # This is to check if someone on the hitlist changed roles
-    sleep(5)
-    if after == bot.get_user(gordo) and str(after.top_role) == "Professor Chaos":
-        list_roles = after.roles.copy()
-        # This is to check if professor chaos aka bitch is one of the roles and if it is, deletes it from the user
-        for index, x in enumerate(list_roles, start=0):
-            # Getting index of "bitch"
-            if str(x) == "Professor Chaos":
-                index_role = index
-                del list_roles[index_role]
-                await after.edit(roles=list_roles)
-                print(after.roles)
+    if str(before.activity) != str(after.activity):
+        logger.info("%s current activity changed to: '%s'", before.name, str(after.activity))
+    """Isto deteta se alguém mudou de status"""
+    if str(before.status) != str(after.status):
+        logger.info("%s current status changed to:'%s'", before.name, str(after.status))
+    """Isto deteta se alguém mudou o nickname"""
+    if before.nick != after.nick:
+        # Aqui é para ver se a pessoa já tinha um nickname \
+        #  para não dar None quando se tenta escrever o nome na mensagem de info
+        if before.nick:
+            name_1 = before.nick
+        else:
+            name_1 = before.name
+        if after.nick:
+            name_2 = after.nick
+        else:
+            name_2 = after.name
+        logger.info("%s changed nickname to:'%s'", name_1, name_2)
+
+    """Isto deteta se alguém mudou de roles"""
+    if before.roles != after.roles:
+        # This is to check if someone on the hitlist changed roles
+        logger.info("%s changed roles", after.name)
+        if after == bot.get_user(gordo) and str(after.top_role) == "Professor Chaos":
+            list_roles = after.roles.copy()
+            # This is to check if professor chaos aka bitch is one of the roles and if it is, deletes it from the user
+            for index, x in enumerate(list_roles, start=0):
+                # Getting index of "bitch"
+                if str(x) == "Professor Chaos":
+                    index_role = index
+                    del list_roles[index_role]
+                    await after.edit(roles=list_roles)
+                    # print(after.roles)
 
 
 # MUSIC BOT
@@ -344,7 +376,7 @@ class YTDLError(Exception):
 
 class YTDLSource(discord.PCMVolumeTransformer):
     YTDL_OPTIONS = {
-        'format': 'bestaudio/best',
+        'format': 'bestaudio/best[height<=480]',
         'extractaudio': True,
         'audioformat': 'mp3',
         'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
@@ -430,6 +462,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
                 except IndexError:
                     raise YTDLError('Couldn\'t retrieve any matches for `{}`'.format(webpage_url))
 
+        print("working until this place")
         return cls(ctx, discord.FFmpegPCMAudio(info['url'], **cls.FFMPEG_OPTIONS), data=info)
 
     @staticmethod
@@ -616,6 +649,7 @@ class Music(commands.Cog):
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
         await ctx.send('An error occurred: {}'.format(str(error)))
+        logger.error(msg=ctx.message.content + " results in:" + str(error))
 
     @commands.command(name='join', invoke_without_subcommand=True)
     async def _join(self, ctx: commands.Context):
@@ -837,11 +871,12 @@ class Music(commands.Cog):
                 songList1, playlistName = spotify.getSongs(txt)
                 songList.extend(songList1)
                 await ctx.send('Enqueued ' + str(len(songList)) + ' songs!')
-            finally:
+            except TypeError:
                 songList1, playlistName = spotify.getSongs(pl_id)
                 songList.extend(songList1)
                 await ctx.send('I did not find the music/playlist you requested, '
                                'in the mean time listen to this one made by my daddy!')
+
             """Adding each song to the queue"""
             for i, x in enumerate(songList):
                 search = x
