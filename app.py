@@ -125,12 +125,6 @@ async def invite(ctx, role):
                              color=role.colour)
     members = role.members
 
-    # Check if it is r6, if so it adds a message
-    if role.name == 'Rainbow':
-        embedVar.add_field(name='SHEEP!',
-                           value='Instala o Rainbow!!!!',
-                           inline=False)
-
     # Next 2 lines are to tag the members of that role
     for x in members:
         logger.info('Invited %s', x.name)
@@ -206,22 +200,18 @@ async def on_message(message):
             choice = await message.channel.send(message.author.mention + " " + random.choice(mensagem))
             logger.info("said [%s] to mata", str(choice))
 
-mensagem = ["You're still a bitch tho ",
+mensagem = ["You're a bitch",
             "No you",
             "Já estou farto de te ouvir bitch",
             "Vai estudar!",
             "A tua mãe chamou-te",
-            "Os teus Celtics são uma porcaria!",
+            "Celtics suck!",
             "Ouvi dizer que o Sheep te insultou",
             "Ouvi dizer que o March te insultou",
             "U gay",
-            "My middle finger get's a boner when i think of you ;)",
             "Roses are red, violets are blue, I've got five fingers and the middle one is for you ;)",
-            "Life is short and so is your penis.",
-            "Life is full of disappointments and I just added you to the list.",
             "If you were a vegetable you'd be a cabbitch",
-            "So if i typed 'idiot' into Googlem would your picture come up?",
-            "You are cordially invited to Go Fuck Yourself :D"]
+            "So if i typed 'idiot' into Google would your picture come up?"]
 
 
 # Functions that get the user reations (yay or nay) and changes the emebeb to display their answers
