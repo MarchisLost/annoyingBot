@@ -125,12 +125,6 @@ async def invite(ctx, role):
                              color=role.colour)
     members = role.members
 
-    # Check if it is r6, if so it adds a message
-    if role.name == 'Rainbow':
-        embedVar.add_field(name='SHEEP!',
-                           value='Instala o Rainbow!!!!',
-                           inline=False)
-
     # Next 2 lines are to tag the members of that role
     for x in members:
         logger.info('Invited %s', x.name)
