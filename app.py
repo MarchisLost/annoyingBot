@@ -2,6 +2,7 @@ import os
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
+from pathlib import Path
 
 import asyncio
 import functools
@@ -21,12 +22,16 @@ import logging
 # TTS
 import pyttsx3
 
+from typing import Optional
+import pydub
+import speech_recognition
+
+
 # This one is to get current time
 import time
-
+import datetime
 from datetime import date
 today = date.today()
-
 
 # Declaring intents
 intents = discord.Intents.all()
@@ -110,6 +115,60 @@ bot = commands.Bot(command_prefix='!',
 
 # Removes the default help command so we can create a new one
 bot.remove_command('help')
+
+
+print(Path.cwd)
+number_txt_file = Path.cwd() / 'number.txt'
+Path(number_txt_file).touch(exist_ok=True)
+number = int(number_txt_file.open('r').read() or 0)
+waves_folder = (Path.cwd() / 'recordings')
+waves_file_format = "recording{}.wav"
+waves_folder.mkdir(parents=True, exist_ok=True)
+tts_folder = (Path.cwd() / 'tts')
+tts_folder.mkdir(parents=True, exist_ok=True)
+tts_file_format = "tts{}{}.mp3"
+sr_folder = (Path.cwd() / 'sr')
+sr_folder.mkdir(parents=True, exist_ok=True)
+sr_file_format = "sr{}{}.wav"
+
+
+
+@bot.command()
+async def record(ctx: commands.Context, me_only: bool):
+    global number
+    now_time = datetime.datetime.now()
+    print(now_time)
+    plus5 = now_time + datetime.timedelta(0, 5)
+    print(plus5)
+    # if not ctx.voice_client:
+    #     voice_client = await ctx.author.voice.channel.connect()
+    #     await discord.utils.sleep_until(plus5)
+    #     now_time = datetime.datetime.now()
+    #     plus5 = now_time + datetime.timedelta(0, 5)
+    #     print(plus5)
+    print(discord.opus.is_loaded())
+    if not ctx.voice_client:
+        print('still not')
+        return
+    wave_file = waves_folder / waves_file_format.format(number)
+    wave_file.touch()
+    fp = wave_file.open('rb')
+    if me_only:
+        ctx.voice_client.listen(discord.UserFilter(discord.WaveSink(str(wave_file)), ctx.author))
+    else:
+        ctx.voice_client.listen(discord.WaveSink(str(wave_file)))
+    await discord.utils.sleep_until(plus5)
+    ctx.voice_client.stop_listening()
+    # print(discord.File(fp, filename='record.wav'))
+    await ctx.send("Recording being sent. Please wait!")
+    await ctx.send('Here\'s, your record file.', file=discord.File(fp, filename=str(wave_file.name)))
+    number += 1
+
+
+
+
+
+
 
 
 @bot.command()
