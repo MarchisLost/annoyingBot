@@ -182,10 +182,9 @@ async def help(ctx):
 # Deletes Gordo's messages
 @bot.event
 async def on_message(message):
-    # Message Deleter-------
     if not message.guild:
-        print('DM')
         # Hidden feature, send !r {sentence} in a DM for the bot to read out the {sentence}
+        # Only in DM's
         if message.content.startswith('!r'):
             global voice_client
             guild = bot.guilds[0]
@@ -205,7 +204,7 @@ async def on_message(message):
                 engine.runAndWait()
                 audio_source = discord.FFmpegPCMAudio("test.mp3")
                 voice_client.play(audio_source, after=None)
-
+    # Message Deleter-------
     if message.author != bot.user:
         logger.info("%s said -> %s", message.author.name, message.content)
     if message.author == bot.get_user(gordo):
