@@ -17,8 +17,15 @@ import spotify
 import re
 import logging
 
+# TTS
+import pyttsx3
+
+# This one is to get current time
+import time
+
 from datetime import date
 today = date.today()
+
 
 # Declaring intents
 intents = discord.Intents.all()
@@ -88,6 +95,14 @@ playlistName = ""
 
 confirmed = 0
 max_players_pummel = 8
+
+voice_client = ''
+
+
+# Getting current time in miliseconds
+def current_milli_time():
+    return round(time.time() * 1000)
+
 
 # Created the bot with a prefix
 bot = commands.Bot(command_prefix='!',
@@ -183,6 +198,28 @@ async def help(ctx):
 # Deletes Gordo's messages
 @bot.event
 async def on_message(message):
+    if not message.guild:
+        # Hidden feature, send !r {sentence} in a DM for the bot to read out the {sentence}
+        # Only in DM's
+        if message.content.startswith('!r'):
+            global voice_client
+            guild = bot.guilds[0]
+            if not voice_client:
+                for vc in guild.voice_channels:
+                    for member in vc.members:
+                        if member.id == message.author.id:
+                            voice_client = await vc.connect()
+                            engine = pyttsx3.init()
+                            engine.save_to_file(message.content[3:], 'test.mp3')
+                            engine.runAndWait()
+                            audio_source = discord.FFmpegPCMAudio("test.mp3")
+                            voice_client.play(audio_source, after=None)
+            else:
+                engine = pyttsx3.init()
+                engine.save_to_file(message.content[3:], 'test.mp3')
+                engine.runAndWait()
+                audio_source = discord.FFmpegPCMAudio("test.mp3")
+                voice_client.play(audio_source, after=None)
     # Message Deleter-------
     if message.author != bot.user:
         logger.info("%s said -> %s", message.author.name, message.content)
@@ -315,12 +352,35 @@ async def on_raw_reaction_remove(payload):
         logger.info("User %s removed No", bot.get_user(payload.user_id).name)
         await embedNo(payload)
 
+last_time = current_milli_time()
+mute_count = 0
+
 
 # Disconnectes Gordo from voice channels
 @bot.event
 async def on_voice_state_update(member, before, after):
+    global last_time  # This is global so i can use it to check the time between mutes
+    global mute_count
     # Simple channel movements log
-    if before.channel is None:
+    if before.self_mute != after.self_mute:
+        current_time = current_milli_time()
+        print(last_time)
+        print(current_time)
+        print(current_time - last_time)
+        if current_time - last_time < 500:
+            mute_count += 1
+        else:
+            mute_count = 0
+        if mute_count > 3:
+            voice_client = await after.channel.connect()
+            mute_count = 0
+            engine = pyttsx3.init()
+            engine.save_to_file("march is a bitch", 'test.mp3')
+            engine.runAndWait()
+            audio_source = discord.FFmpegPCMAudio("test.mp3")
+            await voice_client.play(audio_source, after=None)
+        last_time = current_time
+    elif before.channel is None:
         logger.info("%s joined %s", member, after.channel)
     elif after.channel is None:
         logger.info("%s left %s", member, before.channel)
