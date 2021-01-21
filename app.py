@@ -96,6 +96,8 @@ playlistName = ""
 confirmed = 0
 max_players_pummel = 8
 
+voice_client = ''
+
 
 # Getting current time in miliseconds
 def current_milli_time():
@@ -181,6 +183,29 @@ async def help(ctx):
 @bot.event
 async def on_message(message):
     # Message Deleter-------
+    if not message.guild:
+        print('DM')
+        # Hidden feature, send !r {sentence} in a DM for the bot to read out the {sentence}
+        if message.content.startswith('!r'):
+            global voice_client
+            guild = bot.guilds[0]
+            if not voice_client:
+                for vc in guild.voice_channels:
+                    for member in vc.members:
+                        if member.id == message.author.id:
+                            voice_client = await vc.connect()
+                            engine = pyttsx3.init()
+                            engine.save_to_file(message.content[3:], 'test.mp3')
+                            engine.runAndWait()
+                            audio_source = discord.FFmpegPCMAudio("test.mp3")
+                            voice_client.play(audio_source, after=None)
+            else:
+                engine = pyttsx3.init()
+                engine.save_to_file(message.content[3:], 'test.mp3')
+                engine.runAndWait()
+                audio_source = discord.FFmpegPCMAudio("test.mp3")
+                voice_client.play(audio_source, after=None)
+
     if message.author != bot.user:
         logger.info("%s said -> %s", message.author.name, message.content)
     if message.author == bot.get_user(gordo):
