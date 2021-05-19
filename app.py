@@ -54,6 +54,11 @@ logger.addHandler(ch)
 # logger.error('error message')
 # logger.critical('critical message')
 
+# This gets the pid of the bots process and stores it into a file so it read and then be killed on the automation script
+pid = os.getpid()
+with open('logs/pid/pid.txt', 'w') as pidFile:
+    pidFile.write(str(pid))
+    print(pid)
 
 # Necessário para o código funcionar no Spyder e noutros IDE's
 # import nest_asyncio
@@ -322,6 +327,7 @@ async def on_raw_reaction_remove(payload):
     elif str(payload.emoji) == "❎" and payload.user_id != bot.user.id:
         logger.info("User %s removed No", bot.get_user(payload.user_id).name)
         await embed_no(payload)
+
 
 last_time = current_milli_time()
 mute_count = 0
