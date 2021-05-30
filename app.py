@@ -58,7 +58,6 @@ logger.addHandler(ch)
 pid = os.getpid()
 with open('logs/pid/pid.txt', 'w') as pidFile:
     pidFile.write(str(pid))
-    print(pid)
 
 # Necessário para o código funcionar no Spyder e noutros IDE's
 # import nest_asyncio
