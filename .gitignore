@@ -143,3 +143,5 @@ test.mp3
 .replit
 keep_alive.py
 main.bash
+poetry.lock
+pyproject.toml
