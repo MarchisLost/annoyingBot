@@ -10,6 +10,9 @@ import logging
 # TTS
 import pyttsx3
 
+# Replit
+from keep_alive import keep_alive
+
 # This one is to get current time
 import time
 from musicbot.music import Music
@@ -425,4 +428,6 @@ async def on_ready():
         print('  ', bot.guilds[i].name)
     logger.info('Bot started')
 
+# Replit
+keep_alive()
 bot.run(TOKEN)
