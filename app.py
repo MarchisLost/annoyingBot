@@ -70,12 +70,6 @@ sheep = int(os.getenv('DISCORD_SHEEP'))
 march = int(os.getenv('DISCORD_MARCH'))
 gordo = int(os.getenv('DISCORD_GORDO'))
 mata = int(os.getenv('DISCORD_MATA'))
-bacon = int(os.getenv('DISCORD_BACON'))
-tiago = int(os.getenv('DISCORD_TIAGO'))
-fontes = int(os.getenv('DISCORD_FONTES'))
-tomas = int(os.getenv('DISCORD_TOMAS'))
-vera = int(os.getenv('DISCORD_VERA'))
-tiagoULP = int(os.getenv('DISCORD_TIAGO_ULP'))
 
 # Gets the image path
 img_path = 'tsm.jpeg'
